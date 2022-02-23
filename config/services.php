@@ -30,4 +30,10 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'txtpaper' => [
+        'mobi' => [
+            'email' => env('TXTPAPER_MOBI_EMAIL', '')
+        ]
+    ]
+
 ];
