@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Integrations\TelegramBot\Requests\SendMessageRequest;
+use App\Http\Integrations\Txtpaper\Requests\CreateMobiDocumentRequest;
 use App\Http\Requests\TelegramBotRequest;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class TelegramBotController extends Controller
 {
-    public function webhook(TelegramBotRequest $request): Response|JsonResponse
+    public function webhook(TelegramBotRequest $request): Response
     {
         $payload = (array)json_decode(json: $request->getContent(), associative: true, flags: JSON_THROW_ON_ERROR);
 
@@ -23,24 +23,16 @@ class TelegramBotController extends Controller
 
         if ($urlEntity) {
             $url = mb_substr($text, $urlEntity['offset'], $urlEntity['length']);
-
-            $txtpaper = Http::get('https://txtpaper.com/api/v1/', [
-                'url' => $url,
-                'format' => 'mobi',
-                'email' => config('services.txtpaper.mobi.email'),
-            ]);
-
-            if ($txtpaper->json('status') === 'success') {
-                return new JsonResponse([
-                    'method' => 'sendMessage',
-                    'chat_id' => $chatId,
-                    'text' => __('watchtower.txtpaper.success'),
-                ]);
+            $txtpaperRequest = new CreateMobiDocumentRequest($url, config('services.txtpaper.mobi.email'));
+            $txtpaperResponse = $txtpaperRequest->send();
+            if ($txtpaperResponse->json('status') === 'success') {
+                $botRequest = new SendMessageRequest($chatId, __('watchtower.txtpaper.success'));
+                $botRequest->send();
             }
         }
 
         if ($commandEntity) {
-            Log::debug('Command received: ' . $text);
+            Log::info('Command received: ' . $text);
         }
 
         return \response()->noContent(200);

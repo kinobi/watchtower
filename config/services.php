@@ -30,10 +30,16 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'telegram' => [
+        'bot' => [
+            'token' => env('TELEGRAM_BOT_TOKEN', '')
+        ]
+    ],
+
     'txtpaper' => [
         'mobi' => [
             'email' => env('TXTPAPER_MOBI_EMAIL', '')
         ]
-    ]
+    ],
 
 ];
