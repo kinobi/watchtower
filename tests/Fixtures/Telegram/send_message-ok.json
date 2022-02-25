@@ -1,0 +1,20 @@
+{
+    "ok": true,
+    "result": {
+        "message_id": 45,
+        "from": {
+            "id": 1763418728,
+            "is_bot": true,
+            "first_name": "KinoBot",
+            "username": "kino130282_bot"
+        },
+        "chat": {
+            "id": 109532219,
+            "first_name": "Lionel",
+            "username": "kin0bi",
+            "type": "private"
+        },
+        "date": 1645773308,
+        "text": "WatchTower"
+    }
+}

@@ -13,6 +13,7 @@ class TelegramBotRequest extends FormRequest
      */
     public function authorize(): bool
     {
+        // @todo Filter against username ?
         return true;
     }
 

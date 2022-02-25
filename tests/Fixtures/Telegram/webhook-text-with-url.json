@@ -1,0 +1,28 @@
+{
+    "update_id": 410619084,
+    "message": {
+        "message_id": 21,
+        "from": {
+            "id": 109532219,
+            "is_bot": false,
+            "first_name": "Lionel",
+            "username": "kin0bi",
+            "language_code": "fr"
+        },
+        "chat": {
+            "id": 109532219,
+            "first_name": "Lionel",
+            "username": "kin0bi",
+            "type": "private"
+        },
+        "date": 1645611762,
+        "text": "Use our knowledge and create your own icon theme combo – use github to saveguard your work\nhttps://arcolinux.com/use-our-knowledge-and-create-your-own-icon-theme-combo-use-github-to-saveguard-your-work/",
+        "entities": [
+            {
+                "offset": 91,
+                "length": 111,
+                "type": "url"
+            }
+        ]
+    }
+}

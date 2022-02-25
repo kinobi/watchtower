@@ -12,6 +12,7 @@ class TelegramBotController extends Controller
 {
     public function webhook(TelegramBotRequest $request): Response
     {
+        // @todo Extract a DTO from the Request
         $payload = (array)json_decode(json: $request->getContent(), associative: true, flags: JSON_THROW_ON_ERROR);
 
         $chatId = (int)data_get($payload, 'message.chat.id');
@@ -21,6 +22,7 @@ class TelegramBotController extends Controller
         $urlEntity = $entities->firstWhere('type', 'url');
         $commandEntity = $entities->firstWhere('type', 'bot_command');
 
+        // @todo Move to a Job
         if ($urlEntity) {
             $url = mb_substr($text, $urlEntity['offset'], $urlEntity['length']);
             $txtpaperRequest = new CreateMobiDocumentRequest($url, config('services.txtpaper.mobi.email'));
