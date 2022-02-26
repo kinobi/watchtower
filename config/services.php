@@ -32,13 +32,16 @@ return [
 
     'telegram' => [
         'bot' => [
-            'token' => env('TELEGRAM_BOT_TOKEN', '')
-        ]
+            'token' => env('TELEGRAM_BOT_TOKEN', ''),
+        ],
+        'user' => [
+            'id' => env('TELEGRAM_USER_ID'),
+        ],
     ],
 
     'txtpaper' => [
         'mobi' => [
-            'email' => env('TXTPAPER_MOBI_EMAIL', '')
+            'email' => env('TXTPAPER_MOBI_EMAIL', ''),
         ]
     ],
 

@@ -13,8 +13,9 @@ class TelegramBotRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        // @todo Filter against username ?
-        return true;
+        $fromId = $this->json('message.from.id');
+
+        return $fromId && $fromId === config('services.telegram.user.id');
     }
 
     /**
