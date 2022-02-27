@@ -19,4 +19,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('/telegram/webhook', [TelegramBotController::class, 'webhook'])->name('telegram.webhook');
+Route::post('/telegram/' . config('services.telegram.bot.token'), [TelegramBotController::class, 'webhook'])->name('telegram.webhook');
