@@ -2,39 +2,32 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Integrations\TelegramBot\Requests\SendMessageRequest;
-use App\Http\Integrations\Txtpaper\Requests\CreateMobiDocumentRequest;
+use App\Events\CallbackQueryReceived;
+use App\Events\UrlsAdded;
 use App\Http\Requests\TelegramBotRequest;
+use App\Models\TelegramUpdate;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Log;
 
 class TelegramBotController extends Controller
 {
+    /**
+     * Handle Telegram updates
+     *
+     * @param TelegramBotRequest $request
+     * @return Response
+     * @throws \JsonException
+     */
     public function webhook(TelegramBotRequest $request): Response
     {
-        // @todo Extract a DTO from the Request
-        $payload = (array)json_decode(json: $request->getContent(), associative: true, flags: JSON_THROW_ON_ERROR);
+        /** @var TelegramUpdate $telegramUpdate */
+        $telegramUpdate = TelegramUpdate::create(['payload' => $request->getContent()]);
 
-        $chatId = (int)data_get($payload, 'message.chat.id');
-        $text = (string)data_get($payload, 'message.text', '');
-        $entities = collect(data_get($payload, 'message.entities', []));
-
-        $urlEntity = $entities->firstWhere('type', 'url');
-        $commandEntity = $entities->firstWhere('type', 'bot_command');
-
-        // @todo Move to a Job
-        if ($urlEntity) {
-            $url = mb_substr($text, $urlEntity['offset'], $urlEntity['length']);
-            $txtpaperRequest = new CreateMobiDocumentRequest($url, config('services.txtpaper.mobi.email'));
-            $txtpaperResponse = $txtpaperRequest->send();
-            if ($txtpaperResponse->json('status') === 'success') {
-                $botRequest = new SendMessageRequest($chatId, __('watchtower.txtpaper.success'));
-                $botRequest->send();
-            }
+        if ($telegramUpdate->hasUrl()) {
+            UrlsAdded::dispatch($telegramUpdate);
         }
 
-        if ($commandEntity) {
-            Log::info('Command received: ' . $text);
+        if ($telegramUpdate->isCallbackQuery()) {
+            CallbackQueryReceived::dispatch($telegramUpdate);
         }
 
         return \response()->noContent(200);

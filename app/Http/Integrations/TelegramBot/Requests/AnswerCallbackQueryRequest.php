@@ -3,12 +3,12 @@
 namespace App\Http\Integrations\TelegramBot\Requests;
 
 use App\Http\Integrations\TelegramBot\TelegramBotConnector;
-use JetBrains\PhpStorm\ArrayShape;
+use App\Models\TelegramUpdate;
 use Sammyjo20\Saloon\Constants\Saloon;
 use Sammyjo20\Saloon\Http\SaloonRequest;
 use Sammyjo20\Saloon\Traits\Features\HasJsonBody;
 
-class SendMessageRequest extends SaloonRequest
+class AnswerCallbackQueryRequest extends SaloonRequest
 {
     use HasJsonBody;
 
@@ -26,8 +26,10 @@ class SendMessageRequest extends SaloonRequest
      */
     protected ?string $connector = TelegramBotConnector::class;
 
-    public function __construct(public readonly int $chatId, public readonly string $text)
-    {
+    public function __construct(
+        public readonly TelegramUpdate $telegramUpdate,
+        public readonly string $text,
+    ) {
     }
 
     /**
@@ -37,15 +39,15 @@ class SendMessageRequest extends SaloonRequest
      */
     public function defineEndpoint(): string
     {
-        return '/sendMessage';
+        return '/answerCallbackQuery';
     }
 
-    #[ArrayShape(['chat_id' => "int", 'text' => "string"])]
     public function defaultData(): array
     {
         return [
-            'chat_id' => $this->chatId,
+            'callback_query_id' => $this->telegramUpdate->data('callback_query.id'),
             'text' => $this->text,
+            'show_alert' => true,
         ];
     }
 }

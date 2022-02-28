@@ -2,6 +2,7 @@
 
 namespace App\Http\Integrations\TelegramBot;
 
+use App\Http\Integrations\TelegramBot\Requests\ReplyToAddUrlsRequest;
 use App\Http\Integrations\TelegramBot\Requests\SendMessageRequest;
 use Sammyjo20\Saloon\Http\SaloonConnector;
 use Sammyjo20\Saloon\Traits\Features\AcceptsJson;
@@ -17,6 +18,7 @@ class TelegramBotConnector extends SaloonConnector
      * @var array
      */
     protected array $requests = [
+        ReplyToAddUrlsRequest::class,
         SendMessageRequest::class,
     ];
 

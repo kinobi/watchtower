@@ -1,0 +1,71 @@
+{
+    "update_id": 291363283,
+    "callback_query": {
+        "id": "470437300756869753",
+        "from": {
+            "id": 123456789,
+            "is_bot": false,
+            "first_name": "Lionel",
+            "username": "kin0bi",
+            "language_code": "fr"
+        },
+        "message": {
+            "message_id": 54,
+            "from": {
+                "id": 5251485028,
+                "is_bot": true,
+                "first_name": "WatchTower",
+                "username": "Kin0biWatchTowerBot"
+            },
+            "chat": {
+                "id": 123456789,
+                "first_name": "Lionel",
+                "username": "kin0bi",
+                "type": "private"
+            },
+            "date": 1645970919,
+            "reply_to_message": {
+                "message_id": 53,
+                "from": {
+                    "id": 109532219,
+                    "is_bot": false,
+                    "first_name": "Lionel",
+                    "username": "kin0bi",
+                    "language_code": "fr"
+                },
+                "chat": {
+                    "id": 109532219,
+                    "first_name": "Lionel",
+                    "username": "kin0bi",
+                    "type": "private"
+                },
+                "date": 1645970918,
+                "text": "https://korben.info/comment-suspendre-un-jeu-ou-un-gros-traitement-linux-windows.html",
+                "entities": [
+                    {
+                        "offset": 0,
+                        "length": 85,
+                        "type": "url"
+                    }
+                ]
+            },
+            "text": "⚠ Watchtower already get this one !",
+            "reply_markup": {
+                "inline_keyboard": [
+                    [
+                        {
+                            "text": "🔖",
+                            "callback_data": "{\"action\":\"bookmark\",\"url\":2}"
+                        },
+                        {
+                            "text": "📖",
+                            "callback_data": "{\"action\":\"read\",\"url\":2}"
+                        }
+                    ]
+                ]
+            }
+        },
+        "chat_instance": "8802050350746398127",
+        "data": "{\"action\":\"read\",\"url\":2}"
+    }
+}

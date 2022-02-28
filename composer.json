@@ -24,6 +24,7 @@
         "ext-zip": "*",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.0.1",
+        "guzzlehttp/psr7": "^2.1",
         "inertiajs/inertia-laravel": "^0.5.4",
         "laravel/framework": "^9.0",
         "laravel/sanctum": "^2.8",

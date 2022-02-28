@@ -2,8 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Http\Integrations\TelegramBot\Requests\SendMessageRequest;
-use App\Http\Integrations\Txtpaper\Requests\CreateMobiDocumentRequest;
+use App\Http\Integrations\TelegramBot\Requests\ReplyToAddUrlsRequest;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Config;
@@ -16,7 +15,26 @@ class TelegramBotTest extends TestCase
     use RefreshDatabase;
     use WithFaker;
 
-    public function test_webhok_can_be_handled(): void
+    public function test_webhook_callback_can_be_handled(): void
+    {
+        $webhookPayload = json_decode(
+            file_get_contents(__DIR__ . '/../Fixtures/Telegram/webhook-callback_query-read.json'),
+            true,
+            512,
+            JSON_THROW_ON_ERROR
+        );
+
+        $response = $this->postJson(
+            route('telegram.webhook'),
+            $webhookPayload
+        );
+
+        $response->assertStatus(200);
+
+        $this->assertDatabaseCount('telegram_updates', 1);
+    }
+
+    public function test_webhook_can_be_handled(): void
     {
         $telegramBotResponsePayload = json_decode(
             file_get_contents(__DIR__ . '/../Fixtures/Telegram/send_message-ok.json'),
@@ -26,7 +44,7 @@ class TelegramBotTest extends TestCase
         );
 
         Saloon::fake([
-            new MockResponse(['status' => 'success'], 200),
+//            new MockResponse(['status' => 'success'], 200),
             new MockResponse($telegramBotResponsePayload, 200),
         ]);
 
@@ -44,8 +62,47 @@ class TelegramBotTest extends TestCase
 
         $response->assertStatus(200);
 
-        Saloon::assertSent(CreateMobiDocumentRequest::class);
-        Saloon::assertSent(SendMessageRequest::class);
+        $this->assertDatabaseCount('telegram_updates', 1);
+
+//        Saloon::assertSent(CreateMobiDocumentRequest::class);
+        Saloon::assertSent(ReplyToAddUrlsRequest::class);
+    }
+
+    public function test_webhook_with_many_urls_can_be_handled(): void
+    {
+        $telegramBotResponsePayload = json_decode(
+            file_get_contents(__DIR__ . '/../Fixtures/Telegram/send_message-ok.json'),
+            true,
+            512,
+            JSON_THROW_ON_ERROR
+        );
+
+        Saloon::fake([
+//            new MockResponse(['status' => 'success'], 200),
+            new MockResponse($telegramBotResponsePayload, 200),
+//            new MockResponse(['status' => 'success'], 200),
+            new MockResponse($telegramBotResponsePayload, 200),
+        ]);
+
+        $webhookPayload = json_decode(
+            file_get_contents(__DIR__ . '/../Fixtures/Telegram/webhook-text-with-many-urls.json'),
+            true,
+            512,
+            JSON_THROW_ON_ERROR
+        );
+
+        $response = $this->postJson(
+            route('telegram.webhook'),
+            $webhookPayload
+        );
+
+        $response->assertStatus(200);
+
+
+        $this->assertDatabaseCount('telegram_updates', 1);
+
+//        Saloon::assertSent(CreateMobiDocumentRequest::class);
+        Saloon::assertSent(ReplyToAddUrlsRequest::class);
     }
 
     public function test_wrong_telegram_user_is_rejected(): void
