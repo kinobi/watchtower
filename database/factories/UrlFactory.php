@@ -17,7 +17,12 @@ class UrlFactory extends Factory
     public function definition()
     {
         return [
-            //
+            'scheme' => 'https',
+            'user_info' => '',
+            'host' => 'example.com',
+            'path' => '/',
+            'query' => '',
+            'fragment' => '',
         ];
     }
 }

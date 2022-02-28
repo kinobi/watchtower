@@ -8,6 +8,7 @@ use App\Models\Url;
 use GuzzleHttp\Psr7\Uri;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Support\Facades\Log;
 
 class StoreNewUrls implements ShouldQueue
 {
@@ -15,16 +16,22 @@ class StoreNewUrls implements ShouldQueue
 
     public function handle(UrlsAdded $event): void
     {
+        $telegramUpdate = $event->telegramUpdate;
+
         /** @var Uri $uri */
-        foreach ($event->telegramUpdate->getUris() as $uri) {
+        foreach ($telegramUpdate->getUris() as $uri) {
             /** @var Url $url */
             $url = Url::firstOrCreate(
                 ['host' => $uri->getHost(), 'path' => $uri->getPath()],
                 ['uri' => $uri]
             );
 
-            $botRequest = new ReplyToAddUrlsRequest($event->telegramUpdate, $url);
-            $botRequest->send();
+            $telegramUpdate->urls()->save($url);
+
+            $botRequest = new ReplyToAddUrlsRequest($telegramUpdate, $url);
+            $botResponse = $botRequest->send();
+
+            $url->update(['message_id' => $botResponse->json('result.message_id')]);
         }
     }
 }

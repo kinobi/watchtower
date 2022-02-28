@@ -4,10 +4,11 @@ namespace App\Listeners;
 
 use App\Events\CallbackQueryReceived;
 use App\Http\Integrations\TelegramBot\Requests\AnswerCallbackQueryRequest;
-use App\Http\Integrations\Txtpaper\Requests\CreateMobiDocumentRequest;
+use App\Jobs\ReadUrlJob;
 use App\Models\Url;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Support\Facades\Log;
 
 class AnswerCallback implements ShouldQueue
 {
@@ -17,25 +18,18 @@ class AnswerCallback implements ShouldQueue
     {
         $data = json_decode($event->telegramUpdate->data('callback_query.data'), true, 512, JSON_THROW_ON_ERROR);
 
+        $botRequest = new AnswerCallbackQueryRequest($event->telegramUpdate);
+        $botRequest->send();
+
         /** @var Url $url */
         $url = Url::find((int)$data['url']);
+        if (!$url) {
+            return;
+        }
 
-        $text = match ($data['action']) {
-            'read' => $this->readUrl($url),
-            default => 'No action',
+        match ($data['action']) {
+            'read' => ReadUrlJob::dispatch($url),
+            default => Log::error('Non handled action received', $data),
         };
-
-        $botRequest = new AnswerCallbackQueryRequest($event->telegramUpdate, $text);
-        $botRequest->send();
-    }
-
-    public function readUrl(Url $url): string
-    {
-        $txtpaperRequest = new CreateMobiDocumentRequest($url->uri, config('services.txtpaper.mobi.email'));
-        $txtpaperResponse = $txtpaperRequest->send();
-
-        return $txtpaperResponse->json('status') === 'success'
-            ? __('watchtower.txtpaper.success')
-            : __('watchtower.txtpaper.failed');
     }
 }

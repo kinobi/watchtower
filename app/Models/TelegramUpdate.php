@@ -5,6 +5,7 @@ namespace App\Models;
 use GuzzleHttp\Psr7\Uri;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
@@ -69,5 +70,10 @@ class TelegramUpdate extends Model
     public function isCallbackQuery(): bool
     {
         return $this->data('callback_query') !== null;
+    }
+
+    public function urls(): HasMany
+    {
+        return $this->hasMany(Url::class);
     }
 }

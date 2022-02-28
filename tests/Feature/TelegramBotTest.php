@@ -3,8 +3,11 @@
 namespace Tests\Feature;
 
 use App\Http\Integrations\TelegramBot\Requests\ReplyToAddUrlsRequest;
+use App\Jobs\ReadUrlJob;
+use App\Models\Url;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Config;
 use Sammyjo20\Saloon\Http\MockResponse;
 use Sammyjo20\SaloonLaravel\Facades\Saloon;
@@ -17,6 +20,21 @@ class TelegramBotTest extends TestCase
 
     public function test_webhook_callback_can_be_handled(): void
     {
+        Bus::fake([ReadUrlJob::class]);
+        Url::factory()->create();
+
+        $telegramBotResponsePayload = json_decode(
+            file_get_contents(__DIR__ . '/../Fixtures/Telegram/answer_callback_query-ok.json'),
+            true,
+            512,
+            JSON_THROW_ON_ERROR
+        );
+
+        Saloon::fake([
+            new MockResponse($telegramBotResponsePayload, 200),
+            new MockResponse(['status' => 'success'], 200),
+        ]);
+
         $webhookPayload = json_decode(
             file_get_contents(__DIR__ . '/../Fixtures/Telegram/webhook-callback_query-read.json'),
             true,

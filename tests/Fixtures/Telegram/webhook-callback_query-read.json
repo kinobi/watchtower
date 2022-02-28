@@ -55,17 +55,17 @@
                     [
                         {
                             "text": "🔖",
-                            "callback_data": "{\"action\":\"bookmark\",\"url\":2}"
+                            "callback_data": "{\"action\":\"bookmark\",\"url\":1}"
                         },
                         {
                             "text": "📖",
-                            "callback_data": "{\"action\":\"read\",\"url\":2}"
+                            "callback_data": "{\"action\":\"read\",\"url\":1}"
                         }
                     ]
                 ]
             }
         },
         "chat_instance": "8802050350746398127",
-        "data": "{\"action\":\"read\",\"url\":2}"
+        "data": "{\"action\":\"read\",\"url\":1}"
     }
 }

@@ -3,14 +3,12 @@
 namespace App\Http\Integrations\TelegramBot\Requests;
 
 use App\Http\Integrations\TelegramBot\TelegramBotConnector;
-use App\Models\TelegramUpdate;
 use App\Models\Url;
-use App\Support\UrlTransition;
 use Sammyjo20\Saloon\Constants\Saloon;
 use Sammyjo20\Saloon\Http\SaloonRequest;
 use Sammyjo20\Saloon\Traits\Features\HasJsonBody;
 
-class ReplyToAddUrlsRequest extends SaloonRequest
+class UpdateUrlMessageRequest extends SaloonRequest
 {
     use HasJsonBody;
 
@@ -28,10 +26,8 @@ class ReplyToAddUrlsRequest extends SaloonRequest
      */
     protected ?string $connector = TelegramBotConnector::class;
 
-    public function __construct(
-        public readonly TelegramUpdate $telegramUpdate,
-        public readonly Url $url,
-    ) {
+    public function __construct(public readonly Url $url, public readonly string $text)
+    {
     }
 
     /**
@@ -41,20 +37,15 @@ class ReplyToAddUrlsRequest extends SaloonRequest
      */
     public function defineEndpoint(): string
     {
-        return '/sendMessage';
+        return '/editMessageText';
     }
 
     public function defaultData(): array
     {
-        $chatId = (int)$this->telegramUpdate->data('message.chat.id');
-        $messageId = (int)$this->telegramUpdate->data('message.message_id');
-        $text = $this->url->wasRecentlyCreated ? __('watchtower.url.created') : __('watchtower.url.duplicated');
-
         return [
-            'chat_id' => $chatId,
-            'text' => $text,
-            'reply_to_message_id' => $messageId,
-            'allow_sending_without_reply' => true,
+            'chat_id' => $this->url->telegramUpdate->data('message.chat.id'),
+            'message_id' => $this->url->message_id,
+            'text' => $this->text,
             'reply_markup' => [
                 'inline_keyboard' => $this->url->getTelegramInlineKeyboard(),
             ]

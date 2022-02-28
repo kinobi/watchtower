@@ -3,12 +3,12 @@
 namespace App\Http\Integrations\TelegramBot\Requests;
 
 use App\Http\Integrations\TelegramBot\TelegramBotConnector;
-use App\Models\TelegramUpdate;
+use App\Models\Url;
 use Sammyjo20\Saloon\Constants\Saloon;
 use Sammyjo20\Saloon\Http\SaloonRequest;
 use Sammyjo20\Saloon\Traits\Features\HasJsonBody;
 
-class AnswerCallbackQueryRequest extends SaloonRequest
+class PinUrlMessageRequest extends SaloonRequest
 {
     use HasJsonBody;
 
@@ -26,7 +26,7 @@ class AnswerCallbackQueryRequest extends SaloonRequest
      */
     protected ?string $connector = TelegramBotConnector::class;
 
-    public function __construct(public readonly TelegramUpdate $telegramUpdate)
+    public function __construct(public readonly Url $url)
     {
     }
 
@@ -37,13 +37,15 @@ class AnswerCallbackQueryRequest extends SaloonRequest
      */
     public function defineEndpoint(): string
     {
-        return '/answerCallbackQuery';
+        return '/pinChatMessage';
     }
 
     public function defaultData(): array
     {
         return [
-            'callback_query_id' => $this->telegramUpdate->data('callback_query.id'),
+            'chat_id' => $this->url->telegramUpdate->data('message.chat.id'),
+            'message_id' => $this->url->message_id,
+            'disable_notification' => true,
         ];
     }
 }

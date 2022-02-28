@@ -6,6 +6,7 @@ use App\Events\CallbackQueryReceived;
 use App\Events\UrlsAdded;
 use App\Listeners\AnswerCallback;
 use App\Listeners\StoreNewUrls;
+use App\Listeners\UrlWorkflowSubscriber;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -27,6 +28,11 @@ class EventServiceProvider extends ServiceProvider
         CallbackQueryReceived::class => [
             AnswerCallback::class,
         ]
+    ];
+
+    protected $subscribe = [
+        UrlWorkflowSubscriber::class,
+
     ];
 
     /**

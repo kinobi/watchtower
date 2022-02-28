@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\TelegramUpdate;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -10,11 +11,12 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
-        // @todo status !
         Schema::create('urls', function (Blueprint $table) {
             $table->id();
+
+            $table->json('status');
 
             $table->string('scheme'); // : "https"
 
@@ -30,6 +32,13 @@ return new class extends Migration {
 
             $table->string('fragment'); // : "part2"
 
+            $table->foreignIdFor(TelegramUpdate::class)
+                ->nullable()
+                ->constrained()
+                ->nullOnDelete();
+
+            $table->integer(column: 'message_id', unsigned: true)->nullable();
+
             $table->timestamps();
 
             $table->unique(['host', 'path']);
@@ -41,7 +50,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('urls');
     }
