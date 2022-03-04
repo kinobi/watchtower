@@ -4,8 +4,10 @@ namespace App\Listeners;
 
 use App\Events\CallbackQueryReceived;
 use App\Http\Integrations\TelegramBot\Requests\AnswerCallbackQueryRequest;
-use App\Jobs\ReadUrlJob;
+use App\Jobs\ReadingUrlJob;
+use App\Jobs\SendUrlToKindleJob;
 use App\Models\Url;
+use App\Support\UrlTransition;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Log;
@@ -28,7 +30,8 @@ class AnswerCallback implements ShouldQueue
         }
 
         match ($data['action']) {
-            'read' => ReadUrlJob::dispatch($url),
+            UrlTransition::TO_READING->value => ReadingUrlJob::dispatch($url),
+            UrlTransition::TO_KINDLE->value => SendUrlToKindleJob::dispatch($url),
             default => Log::error('Non handled action received', $data),
         };
     }

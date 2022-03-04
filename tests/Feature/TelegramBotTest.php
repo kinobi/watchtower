@@ -3,7 +3,7 @@
 namespace Tests\Feature;
 
 use App\Http\Integrations\TelegramBot\Requests\ReplyToAddUrlsRequest;
-use App\Jobs\ReadUrlJob;
+use App\Jobs\ReadingUrlJob;
 use App\Models\Url;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -20,7 +20,7 @@ class TelegramBotTest extends TestCase
 
     public function test_webhook_callback_can_be_handled(): void
     {
-        Bus::fake([ReadUrlJob::class]);
+        Bus::fake([ReadingUrlJob::class]);
         Url::factory()->create();
 
         $telegramBotResponsePayload = json_decode(

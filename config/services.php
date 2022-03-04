@@ -46,4 +46,12 @@ return [
         ]
     ],
 
+    'raindrop' => [
+        'client' => [
+            'id' => env('RAINDROP_CLIENT_ID', ''),
+            'secret' => env('RAINDROP_CLIENT_SECRET', ''),
+        ],
+        'token' => env('RAINDROP_TOKEN', ''),
+    ],
+
 ];

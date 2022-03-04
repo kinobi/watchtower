@@ -12,7 +12,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 
-class ReadUrlJob implements ShouldQueue
+class ReadingUrlJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -22,18 +22,7 @@ class ReadUrlJob implements ShouldQueue
 
     public function handle(): void
     {
-//        $txtpaperRequest = new CreateMobiDocumentRequest($this->url->uri, config('services.txtpaper.mobi.email'));
-//        $txtpaperResponse = $txtpaperRequest->send();
-//
-//        Log::debug($txtpaperResponse->body());
-//
-//        $success = $txtpaperResponse->json('status') === 'success';
-//
-//        $text = $success
-//            ? __('watchtower.txtpaper.success')
-//            : __('watchtower.txtpaper.failed');
-
-        $this->url->workflow_apply(UrlTransition::READ->value);
+        $this->url->workflow_apply(UrlTransition::TO_READING->value);
         $this->url->save();
 
         $botRequest = new UpdateUrlMessageRequest($this->url, __('watchtower.url.read'));
