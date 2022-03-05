@@ -9,7 +9,7 @@ use Sammyjo20\Saloon\Constants\Saloon;
 use Sammyjo20\Saloon\Http\SaloonRequest;
 use Sammyjo20\Saloon\Traits\Features\HasJsonBody;
 
-class ReplyToAddUrlsRequest extends SaloonRequest
+class DeleteUrlMessageRequest extends SaloonRequest
 {
     use HasJsonBody;
 
@@ -27,10 +27,8 @@ class ReplyToAddUrlsRequest extends SaloonRequest
      */
     protected ?string $connector = TelegramBotConnector::class;
 
-    public function __construct(
-        public readonly TelegramUpdate $telegramUpdate,
-        public readonly Url $url,
-    ) {
+    public function __construct(public readonly TelegramUpdate $telegramUpdate, public readonly Url $url)
+    {
     }
 
     /**
@@ -40,23 +38,14 @@ class ReplyToAddUrlsRequest extends SaloonRequest
      */
     public function defineEndpoint(): string
     {
-        return '/sendMessage';
+        return '/deleteMessage';
     }
 
     public function defaultData(): array
     {
-        $chatId = (int)$this->telegramUpdate->data('message.chat.id');
-        $messageId = (int)$this->telegramUpdate->data('message.message_id');
-        $text = $this->url->wasRecentlyCreated ? __('watchtower.url.created') : __('watchtower.url.duplicated');
-
         return [
-            'chat_id' => $chatId,
-            'text' => $text,
-            'reply_to_message_id' => $messageId,
-            'allow_sending_without_reply' => true,
-            'reply_markup' => [
-                'inline_keyboard' => $this->url->getTelegramInlineKeyboard(),
-            ]
+            'chat_id' => (int)$this->telegramUpdate->data('message.chat.id'),
+            'message_id' => $this->url->message_id,
         ];
     }
 }

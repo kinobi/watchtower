@@ -10,7 +10,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
 
 class ReadingUrlJob implements ShouldQueue
 {
@@ -26,8 +25,6 @@ class ReadingUrlJob implements ShouldQueue
         $this->url->save();
 
         $botRequest = new UpdateUrlMessageRequest($this->url, __('watchtower.url.read'));
-        $botResponse = $botRequest->send();
-
-        Log::debug($botResponse->body(), $this->url->getTelegramInlineKeyboard());
+        $botRequest->send();
     }
 }
