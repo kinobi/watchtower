@@ -1,0 +1,16 @@
+{
+    "cron": [
+        {
+            "command": "php artisan schedule:run",
+            "schedule": "* * * * *"
+        }
+    ],
+    "formation": {
+        "web": {
+            "quantity": 1
+        },
+        "worker": {
+            "quantity": 2
+        }
+    }
+}
