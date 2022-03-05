@@ -29,7 +29,7 @@ class Url extends Model
         'uri',
     ];
 
-    public function getTelegramInlineKeyboard(): array
+    public function getTelegramInlineKeyboard(int $rowLength = 2): array
     {
         $buttons = collect($this->workflow_transitions())
             ->map(function (Transition $transition) {
@@ -44,7 +44,7 @@ class Url extends Model
                 ];
             });
 
-        return [$buttons->toArray()];
+        return $buttons->chunk($rowLength)->map(fn($row) => $row->values())->toArray();
     }
 
     public function uri(): Attribute
