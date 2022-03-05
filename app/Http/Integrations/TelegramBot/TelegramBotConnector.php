@@ -6,6 +6,7 @@ use App\Http\Integrations\TelegramBot\Requests\DeleteUrlMessageRequest;
 use App\Http\Integrations\TelegramBot\Requests\PinUrlMessageRequest;
 use App\Http\Integrations\TelegramBot\Requests\ReplyToAddUrlsRequest;
 use App\Http\Integrations\TelegramBot\Requests\SendMessageRequest;
+use App\Http\Integrations\TelegramBot\Requests\UnpinUrlMessageRequest;
 use App\Http\Integrations\TelegramBot\Requests\UpdateUrlMessageRequest;
 use Sammyjo20\Saloon\Http\SaloonConnector;
 use Sammyjo20\Saloon\Traits\Features\AcceptsJson;
@@ -23,6 +24,7 @@ class TelegramBotConnector extends SaloonConnector
     protected array $requests = [
         UpdateUrlMessageRequest::class,
         PinUrlMessageRequest::class,
+        UnpinUrlMessageRequest::class,
         ReplyToAddUrlsRequest::class,
         SendMessageRequest::class,
         DeleteUrlMessageRequest::class,

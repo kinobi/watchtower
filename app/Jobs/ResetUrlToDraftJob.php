@@ -3,7 +3,6 @@
 namespace App\Jobs;
 
 use App\Http\Integrations\TelegramBot\Requests\UpdateUrlMessageRequest;
-use App\Http\Integrations\Txtpaper\Requests\CreateMobiDocumentRequest;
 use App\Models\Url;
 use App\Support\UrlTransition;
 use Illuminate\Bus\Queueable;
@@ -14,7 +13,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\Workflow\Exception\NotEnabledTransitionException;
 
-class SendUrlToKindleJob implements ShouldQueue
+class ResetUrlToDraftJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -25,22 +24,10 @@ class SendUrlToKindleJob implements ShouldQueue
     public function handle(): void
     {
         try {
-            $txtpaperRequest = new CreateMobiDocumentRequest($this->url->uri, config('services.txtpaper.mobi.email'));
-            $txtpaperResponse = $txtpaperRequest->send();
+            $this->url->workflow_apply(UrlTransition::RESET->value);
+            $this->url->save();
 
-            Log::debug($txtpaperResponse->body());
-
-            $success = $txtpaperResponse->json('status') === 'success';
-            if ($success) {
-                $this->url->workflow_apply(UrlTransition::TO_KINDLE->value);
-                $this->url->save();
-            }
-
-            $text = $success
-                ? __('watchtower.txtpaper.success')
-                : __('watchtower.txtpaper.failed');
-
-            $botRequest = new UpdateUrlMessageRequest($this->url, $text);
+            $botRequest = new UpdateUrlMessageRequest($this->url, __('watchtower.url.reset'));
             $botRequest->send();
         } catch (NotEnabledTransitionException $e) {
             Log::error($e->getMessage(), ['url' => $this->url]);

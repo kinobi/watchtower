@@ -10,6 +10,8 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
+use Symfony\Component\Workflow\Exception\NotEnabledTransitionException;
 
 class ReadingUrlJob implements ShouldQueue
 {
@@ -21,10 +23,14 @@ class ReadingUrlJob implements ShouldQueue
 
     public function handle(): void
     {
-        $this->url->workflow_apply(UrlTransition::TO_READING->value);
-        $this->url->save();
+        try {
+            $this->url->workflow_apply(UrlTransition::TO_READING->value);
+            $this->url->save();
 
-        $botRequest = new UpdateUrlMessageRequest($this->url, __('watchtower.url.read'));
-        $botRequest->send();
+            $botRequest = new UpdateUrlMessageRequest($this->url, __('watchtower.url.read'));
+            $botRequest->send();
+        } catch (NotEnabledTransitionException $e) {
+            Log::error($e->getMessage(), ['url' => $this->url]);
+        }
     }
 }

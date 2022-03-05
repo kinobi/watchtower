@@ -8,7 +8,7 @@ use Sammyjo20\Saloon\Constants\Saloon;
 use Sammyjo20\Saloon\Http\SaloonRequest;
 use Sammyjo20\Saloon\Traits\Features\HasJsonBody;
 
-class PinUrlMessageRequest extends SaloonRequest
+class UnpinUrlMessageRequest extends SaloonRequest
 {
     use HasJsonBody;
 
@@ -37,7 +37,7 @@ class PinUrlMessageRequest extends SaloonRequest
      */
     public function defineEndpoint(): string
     {
-        return '/pinChatMessage';
+        return '/unpinChatMessage';
     }
 
     public function defaultData(): array
