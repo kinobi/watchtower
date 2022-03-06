@@ -21,7 +21,7 @@ class UrlFactory extends Factory
             'user_info' => '',
             'host' => 'example.com',
             'path' => '/',
-            'query' => 'test=a&test2=b',
+            'query' => '',
             'port' => null,
             'fragment' => '',
         ];

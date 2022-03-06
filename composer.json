@@ -32,7 +32,6 @@
         "laravel/tinker": "^2.5",
         "sammyjo20/saloon-laravel": "^0.8.0",
         "tightenco/ziggy": "^1.0",
-        "voku/simple_html_dom": "^4.8",
         "zerodahero/laravel-workflow": "^4.0"
     },
     "require-dev": {
