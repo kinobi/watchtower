@@ -40,6 +40,7 @@ class AnswerCallback implements ShouldQueue
                     UrlTransition::TO_READING->value => UrlTransition::TO_READING->answerCallback($url),
                     UrlTransition::TO_KINDLE->value => UrlTransition::TO_KINDLE->answerCallback($url),
                     UrlTransition::RESET->value => UrlTransition::RESET->answerCallback($url),
+                    UrlTransition::TO_READ->value => UrlTransition::TO_READ->answerCallback($url),
                     default => $this->getFallbackAnswer($data),
                 },
             ])

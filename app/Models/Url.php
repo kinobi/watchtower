@@ -31,6 +31,7 @@ class Url extends Model
         'chat_id',
         'meta_html',
         'message_id',
+        'read_at',
         'title',
         'uri',
     ];

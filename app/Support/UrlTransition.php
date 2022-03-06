@@ -2,9 +2,10 @@
 
 namespace App\Support;
 
-use App\Jobs\ReadingUrlJob;
-use App\Jobs\ResetUrlToDraftJob;
-use App\Jobs\SendUrlToKindleJob;
+use App\Jobs\WorkflowReadingUrlJob;
+use App\Jobs\WorkflowReadUrlJob;
+use App\Jobs\WorkflowResetUrlToDraftJob;
+use App\Jobs\WorkflowSendUrlToKindleJob;
 use App\Models\Url;
 
 enum UrlTransition: string
@@ -22,7 +23,7 @@ enum UrlTransition: string
     {
         return match ($this) {
             self::TO_READING => $this->answerToReading($url),
-            self::TO_READ => '📗',
+            self::TO_READ => $this->answerToRead($url),
             self::TO_KINDLE => $this->answerToKindle($url),
             self::ANNOTATE => '📝',
             self::TRASH_NOTE => '🗑️',
@@ -48,19 +49,25 @@ enum UrlTransition: string
 
     private function answerToReading(Url $url): string
     {
-        ReadingUrlJob::dispatch($url);
+        WorkflowReadingUrlJob::dispatch($url);
+        return $this->icon();
+    }
+
+    private function answerToRead(Url $url): string
+    {
+        WorkflowReadUrlJob::dispatch($url);
         return $this->icon();
     }
 
     private function answerToKindle(Url $url): string
     {
-        SendUrlToKindleJob::dispatch($url);
+        WorkflowSendUrlToKindleJob::dispatch($url);
         return $this->icon();
     }
 
     private function answerReset(Url $url): string
     {
-        ResetUrlToDraftJob::dispatch($url);
+        WorkflowResetUrlToDraftJob::dispatch($url);
         return $this->icon();
     }
 }

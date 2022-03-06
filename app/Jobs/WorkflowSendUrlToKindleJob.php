@@ -14,7 +14,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\Workflow\Exception\NotEnabledTransitionException;
 
-class SendUrlToKindleJob implements ShouldQueue
+class WorkflowSendUrlToKindleJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
