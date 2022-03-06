@@ -3,13 +3,11 @@
 namespace App\Http\Integrations\TelegramBot\Requests;
 
 use App\Http\Integrations\TelegramBot\TelegramBotConnector;
-use App\Models\TelegramUpdate;
-use App\Models\Url;
 use Sammyjo20\Saloon\Constants\Saloon;
 use Sammyjo20\Saloon\Http\SaloonRequest;
 use Sammyjo20\Saloon\Traits\Features\HasJsonBody;
 
-class DeleteUrlMessageRequest extends SaloonRequest
+class DeleteMessageRequest extends SaloonRequest
 {
     use HasJsonBody;
 
@@ -27,7 +25,7 @@ class DeleteUrlMessageRequest extends SaloonRequest
      */
     protected ?string $connector = TelegramBotConnector::class;
 
-    public function __construct(public readonly TelegramUpdate $telegramUpdate, public readonly Url $url)
+    public function __construct(public readonly int $chatId, public readonly int $messageId)
     {
     }
 
@@ -44,8 +42,8 @@ class DeleteUrlMessageRequest extends SaloonRequest
     public function defaultData(): array
     {
         return [
-            'chat_id' => (int)$this->telegramUpdate->data('message.chat.id'),
-            'message_id' => $this->url->message_id,
+            'chat_id' => $this->chatId,
+            'message_id' => $this->messageId,
         ];
     }
 }

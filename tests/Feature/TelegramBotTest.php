@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Http\Integrations\TelegramBot\Requests\ReplyToAddUrlsRequest;
+use App\Http\Integrations\TelegramBot\Requests\CreateUrlMessageRequest;
 use App\Jobs\ReadingUrlJob;
 use App\Models\Url;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -62,8 +62,9 @@ class TelegramBotTest extends TestCase
         );
 
         Saloon::fake([
-//            new MockResponse(['status' => 'success'], 200),
+            new MockResponse([], 200),
             new MockResponse($telegramBotResponsePayload, 200),
+            new MockResponse([], 200),
         ]);
 
         $webhookPayload = json_decode(
@@ -82,8 +83,7 @@ class TelegramBotTest extends TestCase
 
         $this->assertDatabaseCount('telegram_updates', 1);
 
-//        Saloon::assertSent(CreateMobiDocumentRequest::class);
-        Saloon::assertSent(ReplyToAddUrlsRequest::class);
+        Saloon::assertSent(CreateUrlMessageRequest::class);
     }
 
     public function test_webhook_with_many_urls_can_be_handled(): void
@@ -96,10 +96,12 @@ class TelegramBotTest extends TestCase
         );
 
         Saloon::fake([
-//            new MockResponse(['status' => 'success'], 200),
+            new MockResponse([], 200),
             new MockResponse($telegramBotResponsePayload, 200),
-//            new MockResponse(['status' => 'success'], 200),
+            new MockResponse([], 200),
+            new MockResponse([], 200),
             new MockResponse($telegramBotResponsePayload, 200),
+            new MockResponse([], 200),
         ]);
 
         $webhookPayload = json_decode(
@@ -119,8 +121,7 @@ class TelegramBotTest extends TestCase
 
         $this->assertDatabaseCount('telegram_updates', 1);
 
-//        Saloon::assertSent(CreateMobiDocumentRequest::class);
-        Saloon::assertSent(ReplyToAddUrlsRequest::class);
+        Saloon::assertSent(CreateUrlMessageRequest::class);
     }
 
     public function test_wrong_telegram_user_is_rejected(): void

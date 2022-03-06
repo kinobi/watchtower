@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Support\UrlTransition;
 use GuzzleHttp\Psr7\Uri;
+use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -21,11 +22,16 @@ class Url extends Model
     ];
 
     protected $casts = [
+        'meta_html' => AsArrayObject::class,
+        'read_at' => 'immutable_datetime',
         'status' => 'array',
     ];
 
     protected $fillable = [
+        'chat_id',
+        'meta_html',
         'message_id',
+        'title',
         'uri',
     ];
 

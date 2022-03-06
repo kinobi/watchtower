@@ -3,13 +3,12 @@
 namespace App\Http\Integrations\TelegramBot\Requests;
 
 use App\Http\Integrations\TelegramBot\TelegramBotConnector;
-use App\Models\TelegramUpdate;
 use App\Models\Url;
 use Sammyjo20\Saloon\Constants\Saloon;
 use Sammyjo20\Saloon\Http\SaloonRequest;
 use Sammyjo20\Saloon\Traits\Features\HasJsonBody;
 
-class ReplyToAddUrlsRequest extends SaloonRequest
+class CreateUrlMessageRequest extends SaloonRequest
 {
     use HasJsonBody;
 
@@ -27,10 +26,8 @@ class ReplyToAddUrlsRequest extends SaloonRequest
      */
     protected ?string $connector = TelegramBotConnector::class;
 
-    public function __construct(
-        public readonly TelegramUpdate $telegramUpdate,
-        public readonly Url $url,
-    ) {
+    public function __construct(public readonly Url $url, public readonly bool $wasRecentlyCreated = true)
+    {
     }
 
     /**
@@ -45,15 +42,19 @@ class ReplyToAddUrlsRequest extends SaloonRequest
 
     public function defaultData(): array
     {
-        $chatId = (int)$this->telegramUpdate->data('message.chat.id');
-        $messageId = (int)$this->telegramUpdate->data('message.message_id');
-        $text = $this->url->wasRecentlyCreated ? __('watchtower.url.created') : __('watchtower.url.duplicated');
+        $this->url->refresh();
+
+        $text = sprintf(
+            "<strong><a href=\"%s\">%s</a></strong>\n%s",
+            $this->url->uri,
+            $this->url->title,
+            $this->wasRecentlyCreated ? __('watchtower.url.created') : __('watchtower.url.duplicated')
+        );
 
         return [
-            'chat_id' => $chatId,
+            'chat_id' => $this->url->chat_id,
             'text' => $text,
-            'reply_to_message_id' => $messageId,
-            'allow_sending_without_reply' => true,
+            'parse_mode' => 'HTML',
             'reply_markup' => [
                 'inline_keyboard' => $this->url->getTelegramInlineKeyboard(),
             ]

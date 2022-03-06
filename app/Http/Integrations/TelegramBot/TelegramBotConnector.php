@@ -2,9 +2,9 @@
 
 namespace App\Http\Integrations\TelegramBot;
 
-use App\Http\Integrations\TelegramBot\Requests\DeleteUrlMessageRequest;
+use App\Http\Integrations\TelegramBot\Requests\DeleteMessageRequest;
 use App\Http\Integrations\TelegramBot\Requests\PinUrlMessageRequest;
-use App\Http\Integrations\TelegramBot\Requests\ReplyToAddUrlsRequest;
+use App\Http\Integrations\TelegramBot\Requests\CreateUrlMessageRequest;
 use App\Http\Integrations\TelegramBot\Requests\SendMessageRequest;
 use App\Http\Integrations\TelegramBot\Requests\UnpinUrlMessageRequest;
 use App\Http\Integrations\TelegramBot\Requests\UpdateUrlMessageRequest;
@@ -25,9 +25,9 @@ class TelegramBotConnector extends SaloonConnector
         UpdateUrlMessageRequest::class,
         PinUrlMessageRequest::class,
         UnpinUrlMessageRequest::class,
-        ReplyToAddUrlsRequest::class,
+        CreateUrlMessageRequest::class,
         SendMessageRequest::class,
-        DeleteUrlMessageRequest::class,
+        DeleteMessageRequest::class,
     ];
 
     /**

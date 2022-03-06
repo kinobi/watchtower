@@ -14,14 +14,15 @@ class UrlFactory extends Factory
      *
      * @return array<string, mixed>
      */
-    public function definition()
+    public function definition(): array
     {
         return [
             'scheme' => 'https',
             'user_info' => '',
             'host' => 'example.com',
             'path' => '/',
-            'query' => '',
+            'query' => 'test=a&test2=b',
+            'port' => null,
             'fragment' => '',
         ];
     }

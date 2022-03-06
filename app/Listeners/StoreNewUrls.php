@@ -3,13 +3,17 @@
 namespace App\Listeners;
 
 use App\Events\UrlsAdded;
-use App\Http\Integrations\TelegramBot\Requests\DeleteUrlMessageRequest;
-use App\Http\Integrations\TelegramBot\Requests\ReplyToAddUrlsRequest;
+use App\Http\Integrations\TelegramBot\Requests\DeleteMessageRequest;
+use App\Http\Integrations\TelegramBot\Requests\CreateUrlMessageRequest;
+use App\Jobs\CleanChatJob;
+use App\Jobs\CreateUrlMessageJob;
+use App\Jobs\GetUrlMetaDataJob;
 use App\Models\TelegramUpdate;
 use App\Models\Url;
 use GuzzleHttp\Psr7\Uri;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Support\Facades\Bus;
 
 class StoreNewUrls implements ShouldQueue
 {
@@ -23,9 +27,16 @@ class StoreNewUrls implements ShouldQueue
         foreach ($telegramUpdate->getUris() as $uri) {
             $url = $this->getUrl($uri, $telegramUpdate);
 
-            $this->cleanChat($url, $telegramUpdate);
+            $jobs = [];
 
-            $this->createUrlMessage($telegramUpdate, $url);
+            if ($url->wasRecentlyCreated || !$url->title) {
+                $jobs[] = new GetUrlMetaDataJob($url);
+            }
+
+            $jobs[] = new CleanChatJob($url, $telegramUpdate);
+            $jobs[] = new CreateUrlMessageJob($url, $url->wasRecentlyCreated);
+
+            Bus::chain($jobs)->dispatch();
         }
     }
 
@@ -37,35 +48,11 @@ class StoreNewUrls implements ShouldQueue
         /** @var Url $url */
         $url = Url::firstOrCreate(
             ['host' => $uri->getHost(), 'path' => $uri->getPath()],
-            ['uri' => $uri]
+            ['uri' => $uri, 'chat_id' => (int)$telegramUpdate->data('message.chat.id')]
         );
 
         $telegramUpdate->urls()->save($url);
 
         return $url;
-    }
-
-    /**
-     * Keep only one WatchTower keyboard for this Url
-     */
-    private function cleanChat(Url $url, TelegramUpdate $telegramUpdate): void
-    {
-        if ($url->wasRecentlyCreated || !$url->message_id) {
-            return;
-        }
-
-        $botRequestDelete = new DeleteUrlMessageRequest($telegramUpdate, $url);
-        $botRequestDelete->send();
-    }
-
-    /**
-     * Create the WatchTower keyboard for this Url
-     */
-    private function createUrlMessage(TelegramUpdate $telegramUpdate, Url $url): void
-    {
-        $botRequestReply = new ReplyToAddUrlsRequest($telegramUpdate, $url);
-        $botResponseReply = $botRequestReply->send();
-
-        $url->update(['message_id' => $botResponseReply->json('result.message_id')]);
     }
 }

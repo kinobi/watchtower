@@ -43,7 +43,7 @@ class PinUrlMessageRequest extends SaloonRequest
     public function defaultData(): array
     {
         return [
-            'chat_id' => $this->url->telegramUpdate->data('message.chat.id'),
+            'chat_id' => $this->url->chat_id,
             'message_id' => $this->url->message_id,
         ];
     }

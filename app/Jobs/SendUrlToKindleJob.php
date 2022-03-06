@@ -28,8 +28,6 @@ class SendUrlToKindleJob implements ShouldQueue
             $txtpaperRequest = new CreateMobiDocumentRequest($this->url->uri, config('services.txtpaper.mobi.email'));
             $txtpaperResponse = $txtpaperRequest->send();
 
-            Log::debug($txtpaperResponse->body());
-
             $success = $txtpaperResponse->json('status') === 'success';
             if ($success) {
                 $this->url->workflow_apply(UrlTransition::TO_KINDLE->value);
