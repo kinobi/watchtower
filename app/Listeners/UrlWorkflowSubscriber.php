@@ -2,8 +2,8 @@
 
 namespace App\Listeners;
 
-use App\Http\Integrations\TelegramBot\Requests\PinUrlMessageRequest;
-use App\Http\Integrations\TelegramBot\Requests\UnpinUrlMessageRequest;
+use App\Jobs\PinUrlJob;
+use App\Jobs\UnpinUrlJob;
 use App\Models\Url;
 use App\Support\UrlStatus;
 use Illuminate\Events\Dispatcher;
@@ -16,16 +16,16 @@ class UrlWorkflowSubscriber
     {
         /** @var Url $url */
         $url = $event->getSubject();
-        $botRequestPin = new PinUrlMessageRequest($url);
-        $botRequestPin->send();
+
+        PinUrlJob::dispatch($url);
     }
 
     public function onUnReading(LeaveEvent $event): void
     {
         /** @var Url $url */
         $url = $event->getSubject();
-        $botRequestUnpin = new UnpinUrlMessageRequest($url);
-        $botRequestUnpin->send();
+
+        UnpinUrlJob::dispatch($url);
     }
 
     public function subscribe(Dispatcher $events): void
