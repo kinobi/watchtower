@@ -3,8 +3,6 @@
 namespace App\Listeners;
 
 use App\Events\UrlsAdded;
-use App\Http\Integrations\TelegramBot\Requests\DeleteMessageRequest;
-use App\Http\Integrations\TelegramBot\Requests\CreateUrlMessageRequest;
 use App\Jobs\CleanChatJob;
 use App\Jobs\CreateUrlMessageJob;
 use App\Jobs\GetUrlMetaDataJob;
@@ -47,7 +45,7 @@ class StoreNewUrls implements ShouldQueue
     {
         /** @var Url $url */
         $url = Url::firstOrCreate(
-            ['host' => $uri->getHost(), 'path' => $uri->getPath()],
+            ['host' => $uri->getHost(), 'path' => $uri->getPath(), 'query' => $uri->getQuery()],
             ['uri' => $uri, 'chat_id' => (int)$telegramUpdate->data('message.chat.id')]
         );
 

@@ -2,6 +2,8 @@
 
 namespace App\Http\Integrations\Raindrop;
 
+use App\Http\Integrations\Raindrop\Requests\CheckUrlBookmarkedRequest;
+use App\Http\Integrations\Raindrop\Requests\CreateUrlBookmarkRequest;
 use App\Http\Integrations\Raindrop\Requests\ParseUrlRequest;
 use Sammyjo20\Saloon\Http\SaloonConnector;
 use Sammyjo20\Saloon\Traits\Features\AcceptsJson;
@@ -17,6 +19,8 @@ class RaindropConnector extends SaloonConnector
      * @var array
      */
     protected array $requests = [
+        CheckUrlBookmarkedRequest::class,
+        CreateUrlBookmarkRequest::class,
         ParseUrlRequest::class,
     ];
 

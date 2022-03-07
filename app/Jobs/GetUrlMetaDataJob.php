@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Http\Integrations\Raindrop\Requests\ParseUrlRequest;
 use App\Models\Url;
+use App\Support\Job\WithUniqueUrl;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -14,7 +15,11 @@ use Illuminate\Support\Facades\Log;
 
 class GetUrlMetaDataJob implements ShouldQueue, ShouldBeUnique
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
+    use WithUniqueUrl;
 
     public function __construct(private Url $url)
     {
@@ -34,10 +39,5 @@ class GetUrlMetaDataJob implements ShouldQueue, ShouldBeUnique
         $title = data_get($parsedUrl, 'item.title');
 
         $this->url->update(['title' => $title, 'meta_html' => $metaHtml->toArray()]);
-    }
-
-    public function uniqueId(): string
-    {
-        return md5(Url::class . $this->url->getKey());
     }
 }

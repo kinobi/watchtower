@@ -6,6 +6,7 @@ use App\Events\CallbackQueryReceived;
 use App\Http\Integrations\TelegramBot\Requests\AnswerCallbackQueryRequest;
 use App\Models\Url;
 use App\Support\UrlTransition;
+use Error;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Log;
@@ -16,8 +17,9 @@ class AnswerCallback implements ShouldQueue
 
     public function handle(CallbackQueryReceived $event): void
     {
-        $data = json_decode($event->telegramUpdate->data('callback_query.data'), true, 512, JSON_THROW_ON_ERROR);
         $botRequest = new AnswerCallbackQueryRequest($event->telegramUpdate);
+        $data = $this->getCallbackData($event);
+
         Log::debug('Callback received', $data);
 
         /** @var Url $url */
@@ -25,32 +27,34 @@ class AnswerCallback implements ShouldQueue
         if (!$url) {
             Log::error('Callback does not match any Url', $data);
             $botRequest
-                ->mergeData([
-                    'text' => __('watchtower.url.unknown'),
-                    'show_alert' => true,
-                ])
+                ->mergeData(['text' => __('watchtower.url.unknown'), 'show_alert' => true,])
                 ->send();
 
             return;
         }
 
         $botRequest
-            ->mergeData([
-                'text' => match ($data['action']) {
-                    UrlTransition::TO_READING->value => UrlTransition::TO_READING->answerCallback($url),
-                    UrlTransition::TO_KINDLE->value => UrlTransition::TO_KINDLE->answerCallback($url),
-                    UrlTransition::RESET->value => UrlTransition::RESET->answerCallback($url),
-                    UrlTransition::TO_READ->value => UrlTransition::TO_READ->answerCallback($url),
-                    default => $this->getFallbackAnswer($data),
-                },
-            ])
+            ->mergeData(['text' => $this->getCallbackAnswer($data, $url),])
             ->send();
     }
 
-    private function getFallbackAnswer(array $data): string
+    private function getCallbackAnswer(array $data, Url $url): string
+    {
+        try {
+            return UrlTransition::from($data['action'])->answerCallback($url);
+        } catch (Error) {
+            return $this->getCallbackFallbackAnswer($data);
+        }
+    }
+
+    private function getCallbackFallbackAnswer(array $data): string
     {
         Log::error('Non handled action received', $data);
-
         return __('watchtower.fallback');
+    }
+
+    private function getCallbackData(CallbackQueryReceived $event): mixed
+    {
+        return json_decode($event->telegramUpdate->data('callback_query.data'), true, 512, JSON_THROW_ON_ERROR);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Support;
 
+use App\Jobs\WorkflowBookmarkUrlJob;
 use App\Jobs\WorkflowReadingUrlJob;
 use App\Jobs\WorkflowReadUrlJob;
 use App\Jobs\WorkflowResetUrlToDraftJob;
@@ -27,7 +28,7 @@ enum UrlTransition: string
             self::TO_KINDLE => $this->answerToKindle($url),
             self::ANNOTATE => '📝',
             self::TRASH_NOTE => '🗑️',
-            self::BOOKMARK => '🔖',
+            self::BOOKMARK => $this->answerBookmark($url),
             self::SHARE => '📰',
             self::RESET => $this->answerReset($url),
         };
@@ -68,6 +69,12 @@ enum UrlTransition: string
     private function answerReset(Url $url): string
     {
         WorkflowResetUrlToDraftJob::dispatch($url);
+        return $this->icon();
+    }
+
+    private function answerBookmark(Url $url): string
+    {
+        WorkflowBookmarkUrlJob::dispatch($url);
         return $this->icon();
     }
 }
