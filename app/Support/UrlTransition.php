@@ -22,16 +22,16 @@ enum UrlTransition: string
 
     public function answerCallback(Url $url): string
     {
-        return match ($this) {
-            self::TO_READING => $this->answerToReading($url),
-            self::TO_READ => $this->answerToRead($url),
-            self::TO_KINDLE => $this->answerToKindle($url),
-            self::ANNOTATE => '📝',
-            self::TRASH_NOTE => '🗑️',
-            self::BOOKMARK => $this->answerBookmark($url),
-            self::SHARE => '📰',
-            self::RESET => $this->answerReset($url),
+        match ($this) {
+            self::TO_READING => WorkflowReadingUrlJob::dispatch($url),
+            self::TO_READ => WorkflowReadUrlJob::dispatch($url),
+            self::TO_KINDLE => WorkflowSendUrlToKindleJob::dispatch($url),
+            self::BOOKMARK => WorkflowBookmarkUrlJob::dispatch($url),
+            self::RESET => WorkflowResetUrlToDraftJob::dispatch($url),
+            default => null,
         };
+
+        return $this->getAnswerNotificationText();
     }
 
     public function icon(): string
@@ -48,33 +48,8 @@ enum UrlTransition: string
         };
     }
 
-    private function answerToReading(Url $url): string
+    private function getAnswerNotificationText(): string
     {
-        WorkflowReadingUrlJob::dispatch($url);
-        return $this->icon();
-    }
-
-    private function answerToRead(Url $url): string
-    {
-        WorkflowReadUrlJob::dispatch($url);
-        return $this->icon();
-    }
-
-    private function answerToKindle(Url $url): string
-    {
-        WorkflowSendUrlToKindleJob::dispatch($url);
-        return $this->icon();
-    }
-
-    private function answerReset(Url $url): string
-    {
-        WorkflowResetUrlToDraftJob::dispatch($url);
-        return $this->icon();
-    }
-
-    private function answerBookmark(Url $url): string
-    {
-        WorkflowBookmarkUrlJob::dispatch($url);
-        return $this->icon();
+        return __('watchtower.url.transition.' . $this->value, ['icon' => $this->icon()]);
     }
 }
