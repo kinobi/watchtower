@@ -29,17 +29,15 @@ class CleanChatJob implements ShouldQueue
      */
     public function handle(): void
     {
-        $botRequestDelete = new DeleteMessageRequest(
+        (new DeleteMessageRequest(
             (int)$this->telegramUpdate->data('message.chat.id'),
             (int)$this->telegramUpdate->data('message.message_id')
-        );
-        $botRequestDelete->send();
+        ))->send();
 
         if ($this->url->wasRecentlyCreated || !$this->url->message_id) {
             return;
         }
 
-        $botRequestDelete = new DeleteMessageRequest($this->url->chat_id, $this->url->message_id);
-        $botRequestDelete->send();
+        (new DeleteMessageRequest($this->url->chat_id, $this->url->message_id))->send();
     }
 }

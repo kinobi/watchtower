@@ -41,7 +41,7 @@ class WorkflowBookmarkUrlJob implements ShouldQueue, ShouldBeUnique
                 $this->url->save();
             }
 
-            (new UpdateUrlMessageRequest($this->url, $text))->send();
+            (new UpdateUrlMessageRequest($this->url->refresh(), $text))->send();
         } catch (NotEnabledTransitionException $e) {
             Log::error($e->getMessage(), ['url' => $this->url]);
         }

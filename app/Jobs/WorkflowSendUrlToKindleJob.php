@@ -36,15 +36,29 @@ class WorkflowSendUrlToKindleJob implements ShouldQueue, ShouldBeUnique
             $text = __('watchtower.txtpaper.failed');
             $kindleEmail = config('services.txtpaper.mobi.email');
 
-            $txtpaperResponse = (new CreateMobiDocumentRequest($this->url->uri, $kindleEmail))->send();
-            if ($txtpaperResponse->json('status') === 'success') {
+            if ($this->sendToKindle($kindleEmail)) {
                 $text = __('watchtower.txtpaper.success');
                 $this->url->save();
             }
 
-            (new UpdateUrlMessageRequest($this->url, $text))->send();
+            (new UpdateUrlMessageRequest($this->url->refresh(), $text))->send();
         } catch (NotEnabledTransitionException $e) {
             Log::error($e->getMessage(), ['url' => $this->url]);
         }
+    }
+
+    private function sendToKindle(mixed $kindleEmail): bool
+    {
+        $txtpaperResponse = (new CreateMobiDocumentRequest($this->url->uri, $kindleEmail))->send();
+        if ($txtpaperResponse->json('status') === 'success') {
+            return true;
+        }
+
+        Log::error(
+            'Failed to send to Kindle',
+            ['url' => $this->url, 'raindrop_response' => $txtpaperResponse->json()]
+        );
+
+        return false;
     }
 }

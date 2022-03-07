@@ -32,8 +32,7 @@ class CreateUrlMessageJob implements ShouldQueue
      */
     public function handle(): void
     {
-        $botRequestReply = new CreateUrlMessageRequest($this->url, $this->wasRecentlyCreated);
-        $botResponseReply = $botRequestReply->send();
+        $botResponseReply = (new CreateUrlMessageRequest($this->url, $this->wasRecentlyCreated))->send();
 
         $this->url->update(['message_id' => $botResponseReply->json('result.message_id')]);
 

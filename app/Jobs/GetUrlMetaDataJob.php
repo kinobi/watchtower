@@ -27,8 +27,7 @@ class GetUrlMetaDataJob implements ShouldQueue, ShouldBeUnique
 
     public function handle(): void
     {
-        $parseRequest = new ParseUrlRequest($this->url);
-        $parsedUrl = $parseRequest->send()->json();
+        $parsedUrl = (new ParseUrlRequest($this->url))->send()->json();
 
         if (!data_get($parsedUrl, 'result', false)) {
             Log::error('Failed to parse the Url with Raindrop', ['url' => $this->url, 'raindrop' => $parsedUrl]);
