@@ -21,6 +21,7 @@ class Url extends Model
     ];
 
     protected $casts = [
+        'meta_html' => 'array',
         'read_at' => 'immutable_datetime',
         'status' => 'array',
     ];

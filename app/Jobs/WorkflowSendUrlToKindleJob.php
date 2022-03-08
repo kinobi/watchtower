@@ -15,6 +15,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\Workflow\Exception\NotEnabledTransitionException;
+use Symfony\Component\Workflow\TransitionBlocker;
 
 class WorkflowSendUrlToKindleJob implements ShouldQueue, ShouldBeUnique
 {
@@ -44,6 +45,19 @@ class WorkflowSendUrlToKindleJob implements ShouldQueue, ShouldBeUnique
             (new UpdateUrlMessageRequest($this->url->refresh(), $text))->send();
         } catch (NotEnabledTransitionException $e) {
             Log::error($e->getMessage(), ['url' => $this->url]);
+
+            $transitionBlockerList = $e->getTransitionBlockerList();
+            if ($transitionBlockerList->isEmpty()) {
+                return;
+            }
+
+            /** @var TransitionBlocker $blocker */
+            foreach ($transitionBlockerList->getIterator() as $blocker) {
+                Log::debug(
+                    UrlTransition::TO_KINDLE->value . ' blocked by: ' . $blocker->getMessage(),
+                    ['blocker' => $blocker->getParameters()]
+                );
+            }
         }
     }
 
