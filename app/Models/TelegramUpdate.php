@@ -27,7 +27,9 @@ class TelegramUpdate extends Model
      */
     public function hasUrl(): bool
     {
-        return collect($this->data('message.entities', []))->contains('type', 'url');
+        return collect($this->data('message.entities', []))->contains(
+            fn($value) => in_array($value['type'], ['url', 'text_link'], true)
+        );
     }
 
     /**
@@ -63,8 +65,12 @@ class TelegramUpdate extends Model
         $entities = collect($this->data('message.entities', []));
 
         return $entities
-            ->where('type', 'url')
-            ->map(fn(array $urlEntity) => new Uri(mb_substr($text, $urlEntity['offset'], $urlEntity['length'])));
+            ->whereIn('type', ['url', 'text_link'])
+            ->map(
+                fn(array $urlEntity) => $urlEntity['type'] === 'url'
+                    ? new Uri(mb_substr($text, $urlEntity['offset'], $urlEntity['length']))
+                    : new Uri($urlEntity['url'])
+            );
     }
 
     public function isCallbackQuery(): bool
