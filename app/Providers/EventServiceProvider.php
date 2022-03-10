@@ -7,6 +7,8 @@ use App\Events\UrlsAdded;
 use App\Listeners\AnswerCallback;
 use App\Listeners\StoreNewUrls;
 use App\Listeners\UrlWorkflowSubscriber;
+use App\Models\Url;
+use App\Observers\UrlObserver;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -40,8 +42,8 @@ class EventServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
+    public function boot(): void
     {
-        //
+        Url::observe(UrlObserver::class);
     }
 }

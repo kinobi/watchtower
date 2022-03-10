@@ -16,10 +16,6 @@ class Url extends Model
     use HasFactory;
     use WorkflowTrait;
 
-    protected $attributes = [
-        'status' => '{"draft":1}',
-    ];
-
     protected $casts = [
         'meta_html' => 'array',
         'read_at' => 'immutable_datetime',

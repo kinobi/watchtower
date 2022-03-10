@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use GuzzleHttp\Psr7\Uri;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -16,14 +17,16 @@ class UrlFactory extends Factory
      */
     public function definition(): array
     {
+        $uri = new Uri($this->faker->url());
+
         return [
-            'scheme' => 'https',
-            'user_info' => '',
-            'host' => 'example.com',
-            'path' => '/',
-            'query' => '',
-            'port' => null,
-            'fragment' => '',
+            'scheme' => $uri->getScheme(),
+            'user_info' => $uri->getUserInfo(),
+            'host' => $uri->getHost(),
+            'path' => $uri->getPath(),
+            'query' => $uri->getQuery(),
+            'port' => $uri->getPort(),
+            'fragment' => $uri->getFragment(),
         ];
     }
 }
