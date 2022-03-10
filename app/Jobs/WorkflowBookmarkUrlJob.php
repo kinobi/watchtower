@@ -15,9 +15,8 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
-use Symfony\Component\Workflow\Exception\NotEnabledTransitionException;
 
-class WorkflowBookmarkUrlJob implements ShouldQueue, ShouldBeUnique
+class WorkflowBookmarkUrlJob extends AbstractWorkflowTransitionJob implements ShouldQueue, ShouldBeUnique
 {
     use Dispatchable;
     use InteractsWithQueue;
@@ -29,22 +28,18 @@ class WorkflowBookmarkUrlJob implements ShouldQueue, ShouldBeUnique
     {
     }
 
-    public function handle(): void
+    protected function execute(): void
     {
-        try {
-            $this->url->workflow_apply(UrlTransition::BOOKMARK->value);
+        $this->url->workflow_apply(UrlTransition::BOOKMARK->value);
 
-            $text = __('watchtower.raindrop.failed');
+        $text = __('watchtower.raindrop.failed');
 
-            if ($this->isAlreadyBookmarked() || $this->createBookmark()) {
-                $text = __('watchtower.raindrop.success');
-                $this->url->save();
-            }
-
-            (new UpdateUrlMessageRequest($this->url->refresh(), $text))->send();
-        } catch (NotEnabledTransitionException $e) {
-            Log::error($e->getMessage(), ['url' => $this->url]);
+        if ($this->isAlreadyBookmarked() || $this->createBookmark()) {
+            $text = __('watchtower.raindrop.success');
+            $this->url->save();
         }
+
+        (new UpdateUrlMessageRequest($this->url->refresh(), $text))->send();
     }
 
 

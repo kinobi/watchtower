@@ -13,10 +13,8 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Log;
-use Symfony\Component\Workflow\Exception\NotEnabledTransitionException;
 
-class WorkflowReadUrlJob implements ShouldQueue, ShouldBeUnique
+class WorkflowReadUrlJob extends AbstractWorkflowTransitionJob implements ShouldQueue, ShouldBeUnique
 {
     use Dispatchable;
     use InteractsWithQueue;
@@ -28,15 +26,11 @@ class WorkflowReadUrlJob implements ShouldQueue, ShouldBeUnique
     {
     }
 
-    public function handle(): void
+    protected function execute(): void
     {
-        try {
-            $this->url->workflow_apply(UrlTransition::TO_READ->value);
-            $this->url->update(['read_at' => Carbon::now()]);
+        $this->url->workflow_apply(UrlTransition::TO_READ->value);
+        $this->url->update(['read_at' => Carbon::now()]);
 
-            (new UpdateUrlMessageRequest($this->url, __('watchtower.url.read')))->send();
-        } catch (NotEnabledTransitionException $e) {
-            Log::error($e->getMessage(), ['url' => $this->url]);
-        }
+        (new UpdateUrlMessageRequest($this->url, __('watchtower.url.read')))->send();
     }
 }

@@ -14,10 +14,8 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
-use Symfony\Component\Workflow\Exception\NotEnabledTransitionException;
-use Symfony\Component\Workflow\TransitionBlocker;
 
-class WorkflowSendUrlToKindleJob implements ShouldQueue, ShouldBeUnique
+class WorkflowSendUrlToKindleJob extends AbstractWorkflowTransitionJob implements ShouldQueue, ShouldBeUnique
 {
     use Dispatchable;
     use InteractsWithQueue;
@@ -29,37 +27,21 @@ class WorkflowSendUrlToKindleJob implements ShouldQueue, ShouldBeUnique
     {
     }
 
-    public function handle(): void
+    protected function execute(): void
     {
-        try {
-            $this->url->workflow_apply(UrlTransition::TO_KINDLE->value);
+        $this->url->workflow_apply(UrlTransition::TO_KINDLE->value);
 
-            $text = __('watchtower.txtpaper.failed');
-            $kindleEmail = config('services.txtpaper.mobi.email');
+        $text = __('watchtower.txtpaper.failed');
+        $kindleEmail = config('services.txtpaper.mobi.email');
 
-            if ($this->sendToKindle($kindleEmail)) {
-                $text = __('watchtower.txtpaper.success');
-                $this->url->save();
-            }
-
-            (new UpdateUrlMessageRequest($this->url->refresh(), $text))->send();
-        } catch (NotEnabledTransitionException $e) {
-            Log::error($e->getMessage(), ['url' => $this->url]);
-
-            $transitionBlockerList = $e->getTransitionBlockerList();
-            if ($transitionBlockerList->isEmpty()) {
-                return;
-            }
-
-            /** @var TransitionBlocker $blocker */
-            foreach ($transitionBlockerList->getIterator() as $blocker) {
-                Log::debug(
-                    UrlTransition::TO_KINDLE->value . ' blocked by: ' . $blocker->getMessage(),
-                    ['blocker' => $blocker->getParameters()]
-                );
-            }
+        if ($this->sendToKindle($kindleEmail)) {
+            $text = __('watchtower.txtpaper.success');
+            $this->url->save();
         }
+
+        (new UpdateUrlMessageRequest($this->url->refresh(), $text))->send();
     }
+
 
     private function sendToKindle(mixed $kindleEmail): bool
     {
