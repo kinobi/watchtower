@@ -52,7 +52,7 @@ class WorkflowSendUrlToKindleJob extends AbstractWorkflowTransitionJob implement
 
         Log::error(
             'Failed to send to Kindle',
-            ['url' => $this->url, 'raindrop_response' => $txtpaperResponse->json()]
+            ['url' => $this->url, 'txtpaper_response' => $txtpaperResponse->json()]
         );
 
         return false;

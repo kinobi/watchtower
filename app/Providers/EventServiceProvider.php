@@ -34,7 +34,6 @@ class EventServiceProvider extends ServiceProvider
 
     protected $subscribe = [
         UrlWorkflowSubscriber::class,
-
     ];
 
     /**

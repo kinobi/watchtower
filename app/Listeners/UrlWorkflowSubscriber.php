@@ -20,8 +20,8 @@ class UrlWorkflowSubscriber
         $url = $event->getSubject();
 
         $type = $url->meta_html['type'] ?? null;
-        if ($type === 'video') {
-            $event->setBlocked(true, 'Cannot send a video to Kindle');
+        if (in_array($type, ['video', 'image', 'audio'], true)) {
+            $event->setBlocked(true, sprintf('Cannot send "%s" to Kindle', $type));
         }
     }
 
