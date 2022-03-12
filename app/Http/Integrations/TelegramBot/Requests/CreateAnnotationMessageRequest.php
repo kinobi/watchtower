@@ -2,13 +2,13 @@
 
 namespace App\Http\Integrations\TelegramBot\Requests;
 
-use App\Http\Integrations\TelegramBot\Dtos\MessageReference;
 use App\Http\Integrations\TelegramBot\TelegramBotConnector;
+use App\Models\Url;
 use Sammyjo20\Saloon\Constants\Saloon;
 use Sammyjo20\Saloon\Http\SaloonRequest;
 use Sammyjo20\Saloon\Traits\Features\HasJsonBody;
 
-class DeleteMessageRequest extends SaloonRequest
+class CreateAnnotationMessageRequest extends SaloonRequest
 {
     use HasJsonBody;
 
@@ -19,16 +19,16 @@ class DeleteMessageRequest extends SaloonRequest
      */
     protected ?string $method = Saloon::POST;
 
+    public function __construct(public readonly Url $url)
+    {
+    }
+
     /**
      * The connector.
      *
      * @var string|null
      */
     protected ?string $connector = TelegramBotConnector::class;
-
-    public function __construct(public readonly MessageReference $messageReference)
-    {
-    }
 
     /**
      * Define the endpoint for the request.
@@ -37,14 +37,19 @@ class DeleteMessageRequest extends SaloonRequest
      */
     public function defineEndpoint(): string
     {
-        return '/deleteMessage';
+        return '/sendMessage';
     }
 
     public function defaultData(): array
     {
         return [
-            'chat_id' => $this->messageReference->chatId,
-            'message_id' => $this->messageReference->messageId,
+            'chat_id' => $this->url->chat_id,
+            'text' => __('watchtower.annotation.create', ['title' => $this->url->title]),
+            'disable_web_page_preview' => true,
+            'protect_content' => true,
+            'reply_markup' => [
+                'force_reply' => true,
+            ],
         ];
     }
 }

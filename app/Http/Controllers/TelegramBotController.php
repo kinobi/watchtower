@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\CallbackQueryReceived;
+use App\Events\ReplyReceived;
 use App\Events\UrlsAdded;
 use App\Http\Requests\TelegramBotRequest;
 use App\Models\TelegramUpdate;
@@ -22,7 +23,9 @@ class TelegramBotController extends Controller
         /** @var TelegramUpdate $telegramUpdate */
         $telegramUpdate = TelegramUpdate::create(['payload' => $request->getContent()]);
 
-        if ($telegramUpdate->hasUrl()) {
+        if ($telegramUpdate->isReply()) {
+            ReplyReceived::dispatch($telegramUpdate);
+        } elseif ($telegramUpdate->hasUrl()) {
             UrlsAdded::dispatch($telegramUpdate);
         }
 

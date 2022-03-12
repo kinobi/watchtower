@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Integrations\TelegramBot\Dtos\MessageReference;
 use GuzzleHttp\Psr7\Uri;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -73,9 +74,45 @@ class TelegramUpdate extends Model
             );
     }
 
+    /**
+     * Get the data in the callback
+     *
+     * @return array
+     * @throws \JsonException
+     */
+    public function getCallbackData(): array
+    {
+        return json_decode($this->data('callback_query.data'), true, 512, JSON_THROW_ON_ERROR);
+    }
+
+    public function getTelegramMessageReference(): MessageReference
+    {
+        return new MessageReference(
+            (int)$this->data('message.chat.id'),
+            (int)$this->data('message.message_id')
+        );
+    }
+
+    /**
+     * Does the update is a callback query
+     *
+     * @return bool
+     * @throws \JsonException
+     */
     public function isCallbackQuery(): bool
     {
         return $this->data('callback_query') !== null;
+    }
+
+    /**
+     * Does the update is a reply
+     *
+     * @return bool
+     * @throws \JsonException
+     */
+    public function isReply(): bool
+    {
+        return $this->data('message.reply_to_message') !== null;
     }
 
     public function urls(): HasMany

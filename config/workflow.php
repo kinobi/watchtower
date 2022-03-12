@@ -1,6 +1,9 @@
 <?php
 
+use App\Models\Annotation;
 use App\Models\Url;
+use App\Support\AnnotationStatus;
+use App\Support\AnnotationTransition;
 use App\Support\UrlStatus;
 use App\Support\UrlTransition;
 
@@ -45,7 +48,10 @@ return [
                 'to' => [UrlStatus::READ->value],
             ],
             UrlTransition::SHARE->value => [
-                'from' => [[UrlStatus::READ->value, UrlStatus::ANNOTATED->value]],
+                'from' => [
+                    [UrlStatus::READ->value, UrlStatus::ANNOTATED->value],
+                    [UrlStatus::BOOKMARKED->value, UrlStatus::ANNOTATED->value]
+                ],
                 'to' => [UrlStatus::SHARED->value],
             ],
             UrlTransition::BOOKMARK->value => [
@@ -61,6 +67,24 @@ return [
                     ]
                 ],
                 'to' => [UrlStatus::DRAFT->value],
+            ],
+        ],
+    ],
+    'annotation_workflow' => [
+        'type' => 'state_machine',
+        'marking_store' => [
+            'property' => 'status',
+        ],
+        'supports' => [Annotation::class],
+        'places' => [
+            AnnotationStatus::DRAFT->value,
+            AnnotationStatus::CREATED->value,
+        ],
+        'initial_places' => [AnnotationStatus::DRAFT->value],
+        'transitions' => [
+            AnnotationTransition::WRITE->value => [
+                'from' => [AnnotationStatus::DRAFT->value],
+                'to' => [AnnotationStatus::CREATED->value],
             ],
         ],
     ],

@@ -2,11 +2,13 @@
 
 namespace App\Support;
 
+use App\Jobs\CreateAnnotationJob;
 use App\Jobs\WorkflowBookmarkUrlJob;
 use App\Jobs\WorkflowReadingUrlJob;
 use App\Jobs\WorkflowReadUrlJob;
 use App\Jobs\WorkflowResetUrlToDraftJob;
 use App\Jobs\WorkflowSendUrlToKindleJob;
+use App\Jobs\WorkflowTrashNoteJob;
 use App\Models\Url;
 
 enum UrlTransition: string
@@ -28,6 +30,8 @@ enum UrlTransition: string
             self::TO_KINDLE => WorkflowSendUrlToKindleJob::dispatch($url),
             self::BOOKMARK => WorkflowBookmarkUrlJob::dispatch($url),
             self::RESET => WorkflowResetUrlToDraftJob::dispatch($url),
+            self::ANNOTATE => CreateAnnotationJob::dispatch($url),
+            self::TRASH_NOTE => WorkflowTrashNoteJob::dispatch($url),
             default => null,
         };
 

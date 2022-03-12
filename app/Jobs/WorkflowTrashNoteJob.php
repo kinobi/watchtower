@@ -13,7 +13,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class WorkflowResetUrlToDraftJob extends AbstractWorkflowTransitionJob implements ShouldQueue, ShouldBeUnique
+class WorkflowTrashNoteJob extends AbstractWorkflowTransitionJob implements ShouldQueue, ShouldBeUnique
 {
     use Dispatchable;
     use InteractsWithQueue;
@@ -27,9 +27,15 @@ class WorkflowResetUrlToDraftJob extends AbstractWorkflowTransitionJob implement
 
     protected function execute(): void
     {
-        $this->url->workflow_apply(UrlTransition::RESET->value);
-        $this->url->save();
+        $this->url->workflow_apply(UrlTransition::TRASH_NOTE->value);
 
-        (new UpdateUrlMessageRequest($this->url, __('watchtower.url.reset')))->send();
+        $text = __('watchtower.url.note_trashed.failed');
+
+        if ($this->url->annotation()->delete()) {
+            $text = __('watchtower.url.note_trashed.success');
+            $this->url->save();
+        }
+
+        (new UpdateUrlMessageRequest($this->url, $text))->send();
     }
 }

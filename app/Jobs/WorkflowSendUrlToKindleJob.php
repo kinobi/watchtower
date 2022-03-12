@@ -5,7 +5,7 @@ namespace App\Jobs;
 use App\Http\Integrations\TelegramBot\Requests\UpdateUrlMessageRequest;
 use App\Http\Integrations\Txtpaper\Requests\CreateMobiDocumentRequest;
 use App\Models\Url;
-use App\Support\Job\WithUniqueUrl;
+use App\Support\Jobs\WithUniqueUrl;
 use App\Support\UrlTransition;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;

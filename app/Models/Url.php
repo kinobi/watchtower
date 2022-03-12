@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use App\Http\Integrations\TelegramBot\Dtos\MessageReference;
 use App\Support\UrlTransition;
 use GuzzleHttp\Psr7\Uri;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Symfony\Component\Workflow\Transition;
 use ZeroDaHero\LaravelWorkflow\Traits\WorkflowTrait;
 
@@ -30,6 +32,11 @@ class Url extends Model
         'title',
         'uri',
     ];
+
+    public function getTelegramMessageReference(): MessageReference
+    {
+        return new MessageReference($this->chat_id, $this->message_id);
+    }
 
     public function getTelegramInlineKeyboard(int $rowLength = 2): array
     {
@@ -71,6 +78,11 @@ class Url extends Model
                 'fragment' => $uri->getFragment(),
             ]
         );
+    }
+
+    public function annotation(): HasOne
+    {
+        return $this->hasOne(Annotation::class);
     }
 
     public function telegramUpdate(): BelongsTo

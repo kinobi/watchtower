@@ -4,7 +4,7 @@ namespace App\Jobs;
 
 use App\Http\Integrations\TelegramBot\Requests\UnpinUrlMessageRequest;
 use App\Models\Url;
-use App\Support\Job\WithUniqueUrl;
+use App\Support\Jobs\WithUniqueUrl;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
