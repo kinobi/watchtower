@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Http\Integrations\TelegramBot\Requests\UpdateUrlMessageRequest;
 use App\Http\Integrations\Txtpaper\Requests\CreateMobiDocumentRequest;
 use App\Models\Url;
+use App\Services\UrlMessageFormatter;
 use App\Support\Jobs\WithUniqueUrl;
 use App\Support\UrlTransition;
 use Illuminate\Bus\Queueable;
@@ -27,7 +28,7 @@ class WorkflowSendUrlToKindleJob extends AbstractWorkflowTransitionJob implement
     {
     }
 
-    protected function execute(): void
+    protected function execute(UrlMessageFormatter $urlMessageFormatter): void
     {
         $this->url->workflow_apply(UrlTransition::TO_KINDLE->value);
 
@@ -39,7 +40,10 @@ class WorkflowSendUrlToKindleJob extends AbstractWorkflowTransitionJob implement
             $this->url->save();
         }
 
-        (new UpdateUrlMessageRequest($this->url->refresh(), $text))->send();
+        (new UpdateUrlMessageRequest(
+            $this->url->refresh(),
+            $urlMessageFormatter->formatHtmlMessage($this->url, $text)
+        ))->send();
     }
 
 

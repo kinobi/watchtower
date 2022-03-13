@@ -26,7 +26,7 @@ class CreateUrlMessageRequest extends SaloonRequest
      */
     protected ?string $connector = TelegramBotConnector::class;
 
-    public function __construct(public readonly Url $url, public readonly bool $wasRecentlyCreated = true)
+    public function __construct(public readonly Url $url, public readonly string $text)
     {
     }
 
@@ -42,18 +42,9 @@ class CreateUrlMessageRequest extends SaloonRequest
 
     public function defaultData(): array
     {
-        $this->url->refresh();
-
-        $text = sprintf(
-            "<strong><a href=\"%s\">%s</a></strong>\n%s",
-            $this->url->uri,
-            $this->url->title,
-            $this->wasRecentlyCreated ? __('watchtower.url.created') : __('watchtower.url.duplicated')
-        );
-
         return [
             'chat_id' => $this->url->chat_id,
-            'text' => $text,
+            'text' => $this->text,
             'parse_mode' => 'HTML',
             'reply_markup' => [
                 'inline_keyboard' => $this->url->getTelegramInlineKeyboard(),

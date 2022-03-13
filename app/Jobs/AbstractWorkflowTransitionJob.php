@@ -2,18 +2,19 @@
 
 namespace App\Jobs;
 
+use App\Services\UrlMessageFormatter;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\Workflow\Exception\NotEnabledTransitionException;
 use Symfony\Component\Workflow\TransitionBlocker;
 
 abstract class AbstractWorkflowTransitionJob
 {
-    abstract protected function execute();
+    abstract protected function execute(UrlMessageFormatter $urlMessageFormatter);
 
-    public function handle(): void
+    public function handle(UrlMessageFormatter $urlMessageFormatter): void
     {
         try {
-            $this->execute();
+            $this->execute($urlMessageFormatter);
         } catch (NotEnabledTransitionException $e) {
             Log::error($e->getMessage(), ['subject' => $e->getSubject()]);
 
