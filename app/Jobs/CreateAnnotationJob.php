@@ -2,10 +2,9 @@
 
 namespace App\Jobs;
 
-use App\Http\Integrations\TelegramBot\Requests\UpdateUrlMessageRequest;
+use App\Http\Integrations\TelegramBot\Requests\CreateAnnotationMessageRequest;
 use App\Models\Url;
 use App\Support\Jobs\WithUniqueUrl;
-use App\Support\UrlTransition;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -13,7 +12,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class WorkflowResetUrlToDraftJob extends AbstractWorkflowTransitionJob implements ShouldQueue, ShouldBeUnique
+class CreateAnnotationJob implements ShouldQueue, ShouldBeUnique
 {
     use Dispatchable;
     use InteractsWithQueue;
@@ -21,15 +20,18 @@ class WorkflowResetUrlToDraftJob extends AbstractWorkflowTransitionJob implement
     use SerializesModels;
     use WithUniqueUrl;
 
+
     public function __construct(public readonly Url $url)
     {
     }
 
-    protected function execute(): void
+    public function handle(): void
     {
-        $this->url->workflow_apply(UrlTransition::RESET->value);
-        $this->url->save();
+        $botResponseReply = (new CreateAnnotationMessageRequest($this->url))->send();
 
-        (new UpdateUrlMessageRequest($this->url, __('watchtower.url.reset')))->send();
+        $this->url->annotation()->firstOrCreate([
+            'chat_id' => $botResponseReply->json('result.chat.id'),
+            'message_id' => $botResponseReply->json('result.message_id'),
+        ]);
     }
 }

@@ -17,24 +17,26 @@ class AnswerCallback implements ShouldQueue
 
     public function handle(CallbackQueryReceived $event): void
     {
-        $botRequest = new AnswerCallbackQueryRequest($event->telegramUpdate);
-        $data = $this->getCallbackData($event);
+        $telegramUpdate = $event->telegramUpdate;
+        $callbackData = $telegramUpdate->getCallbackData();
 
-        Log::debug('Callback received', $data);
+        $botRequest = new AnswerCallbackQueryRequest($telegramUpdate);
+
+        Log::debug('Callback received', $callbackData);
 
         /** @var Url $url */
-        $url = Url::find((int)$data['url']);
+        $url = Url::find((int)$callbackData['url']);
         if (!$url) {
-            Log::error('Callback does not match any Url', $data);
+            Log::error('Callback does not match any Url', $callbackData);
             $botRequest
-                ->mergeData(['text' => __('watchtower.url.unknown'), 'show_alert' => true,])
+                ->mergeData(['text' => __('watchtower.url.unknown'), 'show_alert' => true])
                 ->send();
 
             return;
         }
 
         $botRequest
-            ->mergeData(['text' => $this->getCallbackAnswer($data, $url),])
+            ->mergeData(['text' => $this->getCallbackAnswer($callbackData, $url)])
             ->send();
     }
 
@@ -51,10 +53,5 @@ class AnswerCallback implements ShouldQueue
     {
         Log::error('Non handled action received', $data);
         return __('watchtower.fallback');
-    }
-
-    private function getCallbackData(CallbackQueryReceived $event): mixed
-    {
-        return json_decode($event->telegramUpdate->data('callback_query.data'), true, 512, JSON_THROW_ON_ERROR);
     }
 }

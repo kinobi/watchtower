@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Support\Job;
+namespace App\Support\Jobs;
 
 use App\Models\Url;
 

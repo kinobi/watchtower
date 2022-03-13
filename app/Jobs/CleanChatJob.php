@@ -2,9 +2,8 @@
 
 namespace App\Jobs;
 
+use App\Http\Integrations\TelegramBot\Dtos\MessageReference;
 use App\Http\Integrations\TelegramBot\Requests\DeleteMessageRequest;
-use App\Models\TelegramUpdate;
-use App\Models\Url;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -13,31 +12,24 @@ use Illuminate\Queue\SerializesModels;
 
 class CleanChatJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
-    /**
-     * Create a new job instance.
-     *
-     * @return void
-     */
-    public function __construct(private Url $url, private TelegramUpdate $telegramUpdate)
+    /** @var MessageReference[] */
+    private array $messageReferences;
+
+    public function __construct(MessageReference ...$messageReferences)
     {
+        $this->messageReferences = $messageReferences;
     }
 
-    /**
-     * Keep only one WatchTower keyboard for this Url
-     */
     public function handle(): void
     {
-        (new DeleteMessageRequest(
-            (int)$this->telegramUpdate->data('message.chat.id'),
-            (int)$this->telegramUpdate->data('message.message_id')
-        ))->send();
-
-        if ($this->url->wasRecentlyCreated || !$this->url->message_id) {
-            return;
-        }
-
-        (new DeleteMessageRequest($this->url->chat_id, $this->url->message_id))->send();
+        collect($this->messageReferences)
+            ->each(
+                fn(MessageReference $messageReference) => (new DeleteMessageRequest($messageReference))->send()
+            );
     }
 }
