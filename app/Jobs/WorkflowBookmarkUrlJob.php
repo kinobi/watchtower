@@ -6,6 +6,7 @@ use App\Http\Integrations\Raindrop\Requests\CheckUrlBookmarkedRequest;
 use App\Http\Integrations\Raindrop\Requests\CreateUrlBookmarkRequest;
 use App\Http\Integrations\TelegramBot\Requests\UpdateUrlMessageRequest;
 use App\Models\Url;
+use App\Services\UrlMessageFormatter;
 use App\Support\Jobs\WithUniqueUrl;
 use App\Support\UrlTransition;
 use Illuminate\Bus\Queueable;
@@ -28,7 +29,7 @@ class WorkflowBookmarkUrlJob extends AbstractWorkflowTransitionJob implements Sh
     {
     }
 
-    protected function execute(): void
+    protected function execute(UrlMessageFormatter $urlMessageFormatter): void
     {
         $this->url->workflow_apply(UrlTransition::BOOKMARK->value);
 
@@ -39,7 +40,10 @@ class WorkflowBookmarkUrlJob extends AbstractWorkflowTransitionJob implements Sh
             $this->url->save();
         }
 
-        (new UpdateUrlMessageRequest($this->url->refresh(), $text))->send();
+        (new UpdateUrlMessageRequest(
+            $this->url->refresh(),
+            $urlMessageFormatter->formatHtmlMessage($this->url, $text)
+        ))->send();
     }
 
 

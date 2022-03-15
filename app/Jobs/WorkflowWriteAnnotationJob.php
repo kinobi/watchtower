@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Models\Annotation;
 use App\Models\TelegramUpdate;
+use App\Services\UrlMessageFormatter;
 use App\Support\AnnotationTransition;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -22,7 +23,7 @@ class WorkflowWriteAnnotationJob extends AbstractWorkflowTransitionJob implement
     {
     }
 
-    public function execute(): void
+    public function execute(UrlMessageFormatter $urlMessageFormatter): void
     {
         $this->annotation->workflow_apply(AnnotationTransition::WRITE->value);
         $this->annotation->update(['note' => $this->telegramUpdate->data('message.text')]);

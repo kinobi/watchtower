@@ -42,17 +42,10 @@ class UpdateUrlMessageRequest extends SaloonRequest
 
     public function defaultData(): array
     {
-        $text = sprintf(
-            "<strong><a href=\"%s\">%s</a></strong>\n%s",
-            $this->url->uri,
-            $this->url->title,
-            $this->text
-        );
-
         return [
             'chat_id' => $this->url->chat_id,
             'message_id' => $this->url->message_id,
-            'text' => $text,
+            'text' => $this->text,
             'parse_mode' => 'HTML',
             'reply_markup' => [
                 'inline_keyboard' => $this->url->getTelegramInlineKeyboard(),

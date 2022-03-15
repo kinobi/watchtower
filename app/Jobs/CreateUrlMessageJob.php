@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Http\Integrations\TelegramBot\Requests\CreateUrlMessageRequest;
 use App\Models\Url;
+use App\Services\UrlMessageFormatter;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -29,9 +30,14 @@ class CreateUrlMessageJob implements ShouldQueue
     /**
      * Create the WatchTower keyboard for this Url
      */
-    public function handle(): void
+    public function handle(UrlMessageFormatter $urlMessageFormatter): void
     {
-        $botResponseReply = (new CreateUrlMessageRequest($this->url, $this->wasRecentlyCreated))->send();
+        $text = $this->wasRecentlyCreated ? __('watchtower.url.created') : __('watchtower.url.duplicated');
+
+        $botResponseReply = (new CreateUrlMessageRequest(
+            $this->url->refresh(),
+            $urlMessageFormatter->formatHtmlMessage($this->url, $text)
+        ))->send();
 
         $this->url->update(['message_id' => $botResponseReply->json('result.message_id')]);
     }

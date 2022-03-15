@@ -2,6 +2,8 @@
 
 namespace App\Http\Integrations\TelegramBot;
 
+use App\Http\Integrations\TelegramBot\Requests\AnswerCallbackQueryRequest;
+use App\Http\Integrations\TelegramBot\Requests\CreateAnnotationMessageRequest;
 use App\Http\Integrations\TelegramBot\Requests\DeleteMessageRequest;
 use App\Http\Integrations\TelegramBot\Requests\PinUrlMessageRequest;
 use App\Http\Integrations\TelegramBot\Requests\CreateUrlMessageRequest;
@@ -22,12 +24,14 @@ class TelegramBotConnector extends SaloonConnector
      * @var array
      */
     protected array $requests = [
-        UpdateUrlMessageRequest::class,
-        PinUrlMessageRequest::class,
-        UnpinUrlMessageRequest::class,
+        AnswerCallbackQueryRequest::class,
+        CreateAnnotationMessageRequest::class,
         CreateUrlMessageRequest::class,
-        SendMessageRequest::class,
         DeleteMessageRequest::class,
+        PinUrlMessageRequest::class,
+        SendMessageRequest::class,
+        UnpinUrlMessageRequest::class,
+        UpdateUrlMessageRequest::class,
     ];
 
     /**
