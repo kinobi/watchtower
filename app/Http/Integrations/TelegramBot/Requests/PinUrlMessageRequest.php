@@ -45,6 +45,7 @@ class PinUrlMessageRequest extends SaloonRequest
         return [
             'chat_id' => $this->url->chat_id,
             'message_id' => $this->url->message_id,
+            'disable_notification' => true,
         ];
     }
 }

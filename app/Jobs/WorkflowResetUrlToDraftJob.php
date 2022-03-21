@@ -2,7 +2,6 @@
 
 namespace App\Jobs;
 
-use App\Http\Integrations\TelegramBot\Requests\UpdateUrlMessageRequest;
 use App\Models\Url;
 use App\Services\UrlMessageFormatter;
 use App\Support\Jobs\WithUniqueUrl;
@@ -21,6 +20,7 @@ class WorkflowResetUrlToDraftJob extends AbstractWorkflowTransitionJob implement
     use Queueable;
     use SerializesModels;
     use WithUniqueUrl;
+    use WithUrlMessageUpdate;
 
     public function __construct(public readonly Url $url)
     {
@@ -31,9 +31,9 @@ class WorkflowResetUrlToDraftJob extends AbstractWorkflowTransitionJob implement
         $this->url->workflow_apply(UrlTransition::RESET->value);
         $this->url->save();
 
-        (new UpdateUrlMessageRequest(
+        $this->updateUrlMessage(
             $this->url,
             $urlMessageFormatter->formatHtmlMessage($this->url, __('watchtower.url.reset'))
-        ))->send();
+        );
     }
 }

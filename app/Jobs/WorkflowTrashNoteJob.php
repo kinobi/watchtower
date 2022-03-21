@@ -2,7 +2,6 @@
 
 namespace App\Jobs;
 
-use App\Http\Integrations\TelegramBot\Requests\UpdateUrlMessageRequest;
 use App\Models\Url;
 use App\Services\UrlMessageFormatter;
 use App\Support\Jobs\WithUniqueUrl;
@@ -21,6 +20,7 @@ class WorkflowTrashNoteJob extends AbstractWorkflowTransitionJob implements Shou
     use Queueable;
     use SerializesModels;
     use WithUniqueUrl;
+    use WithUrlMessageUpdate;
 
     public function __construct(public readonly Url $url)
     {
@@ -37,9 +37,9 @@ class WorkflowTrashNoteJob extends AbstractWorkflowTransitionJob implements Shou
             $this->url->save();
         }
 
-        (new UpdateUrlMessageRequest(
+        $this->updateUrlMessage(
             $this->url->refresh(),
             $urlMessageFormatter->formatHtmlMessage($this->url, $text)
-        ))->send();
+        );
     }
 }

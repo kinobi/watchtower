@@ -4,7 +4,6 @@ namespace App\Jobs;
 
 use App\Http\Integrations\Raindrop\Requests\CheckUrlBookmarkedRequest;
 use App\Http\Integrations\Raindrop\Requests\CreateUrlBookmarkRequest;
-use App\Http\Integrations\TelegramBot\Requests\UpdateUrlMessageRequest;
 use App\Models\Url;
 use App\Services\UrlMessageFormatter;
 use App\Support\Jobs\WithUniqueUrl;
@@ -24,6 +23,7 @@ class WorkflowBookmarkUrlJob extends AbstractWorkflowTransitionJob implements Sh
     use Queueable;
     use SerializesModels;
     use WithUniqueUrl;
+    use WithUrlMessageUpdate;
 
     public function __construct(public readonly Url $url)
     {
@@ -40,10 +40,10 @@ class WorkflowBookmarkUrlJob extends AbstractWorkflowTransitionJob implements Sh
             $this->url->save();
         }
 
-        (new UpdateUrlMessageRequest(
+        $this->updateUrlMessage(
             $this->url->refresh(),
             $urlMessageFormatter->formatHtmlMessage($this->url, $text)
-        ))->send();
+        );
     }
 
 

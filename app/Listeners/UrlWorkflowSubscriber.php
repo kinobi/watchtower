@@ -25,14 +25,6 @@ class UrlWorkflowSubscriber
         }
     }
 
-    public function onReading(EnteredEvent $event): void
-    {
-        /** @var Url $url */
-        $url = $event->getSubject();
-
-        PinUrlJob::dispatch($url);
-    }
-
     public function onUnReading(LeaveEvent $event): void
     {
         /** @var Url $url */
@@ -47,8 +39,6 @@ class UrlWorkflowSubscriber
             'workflow.url_workflow.guard.' . UrlTransition::TO_KINDLE->value,
             [__CLASS__, 'onKindleSending']
         );
-
-        $events->listen('workflow.url_workflow.entered.' . UrlStatus::READING->value, [__CLASS__, 'onReading']);
 
         $events->listen('workflow.url_workflow.leave.' . UrlStatus::READING->value, [__CLASS__, 'onUnReading']);
     }
