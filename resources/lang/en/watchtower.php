@@ -25,6 +25,9 @@ return [
             'failed' => '⚠ Failed to trash the note !',
         ],
         'unknown' => '⚠ Unknown Url !',
+        'stats' => [
+            'queue' => '📊 :count_draft links waiting, currently reading :count_reading and :count_read read',
+        ],
         'transition' => [
             UrlTransition::TO_READING->value => ':icon going to reading...',
             UrlTransition::TO_READ->value => ':icon going to read...',
