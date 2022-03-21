@@ -11,6 +11,7 @@ enum UrlStatus: string
     case NOT_ANNOTATED = 'not_annotated';
     case ANNOTATED = 'annotated';
     case SHARED = 'shared';
+    case NOT_BOOKMARKED = 'not_bookmarked';
     case BOOKMARKED = 'bookmarked';
     case READ = 'read';
 }

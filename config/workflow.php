@@ -23,6 +23,7 @@ return [
             UrlStatus::ANNOTATED->value,
             UrlStatus::SHARED->value,
             UrlStatus::BOOKMARKED->value,
+            UrlStatus::NOT_BOOKMARKED->value,
             UrlStatus::READ->value,
         ],
         'initial_places' => [UrlStatus::DRAFT->value],
@@ -45,17 +46,16 @@ return [
             ],
             UrlTransition::TO_READ->value => [
                 'from' => [UrlStatus::READING->value],
-                'to' => [UrlStatus::READ->value],
+                'to' => [UrlStatus::READ->value, UrlStatus::NOT_BOOKMARKED->value],
             ],
             UrlTransition::SHARE->value => [
                 'from' => [
                     [UrlStatus::READ->value, UrlStatus::ANNOTATED->value],
-                    [UrlStatus::BOOKMARKED->value, UrlStatus::ANNOTATED->value]
                 ],
                 'to' => [UrlStatus::SHARED->value],
             ],
             UrlTransition::BOOKMARK->value => [
-                'from' => [UrlStatus::READ->value],
+                'from' => [UrlStatus::NOT_BOOKMARKED->value],
                 'to' => [UrlStatus::BOOKMARKED->value],
             ],
             UrlTransition::RESET->value => [
