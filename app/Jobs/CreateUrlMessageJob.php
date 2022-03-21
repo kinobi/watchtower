@@ -33,6 +33,11 @@ class CreateUrlMessageJob implements ShouldQueue
     public function handle(UrlMessageFormatter $urlMessageFormatter): void
     {
         $text = $this->wasRecentlyCreated ? __('watchtower.url.created') : __('watchtower.url.duplicated');
+        $text .= PHP_EOL . __('watchtower.url.stats.queue', [
+                'count_draft' => Url::draft()->count(),
+                'count_reading' => Url::reading()->count(),
+                'count_read' => Url::read()->count(),
+            ]);
 
         $botResponseReply = (new CreateUrlMessageRequest(
             $this->url->refresh(),

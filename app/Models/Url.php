@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Http\Integrations\TelegramBot\Dtos\MessageReference;
 use App\Support\UrlTransition;
 use GuzzleHttp\Psr7\Uri;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -88,5 +89,20 @@ class Url extends Model
     public function telegramUpdate(): BelongsTo
     {
         return $this->belongsTo(TelegramUpdate::class);
+    }
+
+    public function scopeDraft(Builder $query): Builder
+    {
+        return $query->where('status->draft', 1);
+    }
+
+    public function scopeRead(Builder $query): Builder
+    {
+        return $query->where('status->read', 1);
+    }
+
+    public function scopeReading(Builder $query): Builder
+    {
+        return $query->where('status->reading', 1);
     }
 }
