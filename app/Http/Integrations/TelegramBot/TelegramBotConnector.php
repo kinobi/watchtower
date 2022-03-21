@@ -31,7 +31,6 @@ class TelegramBotConnector extends SaloonConnector
         PinUrlMessageRequest::class,
         SendMessageRequest::class,
         UnpinUrlMessageRequest::class,
-        UpdateUrlMessageRequest::class,
     ];
 
     /**

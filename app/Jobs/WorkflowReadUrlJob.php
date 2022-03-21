@@ -2,7 +2,6 @@
 
 namespace App\Jobs;
 
-use App\Http\Integrations\TelegramBot\Requests\UpdateUrlMessageRequest;
 use App\Models\Url;
 use App\Services\UrlMessageFormatter;
 use App\Support\Jobs\WithUniqueUrl;
@@ -22,6 +21,7 @@ class WorkflowReadUrlJob extends AbstractWorkflowTransitionJob implements Should
     use Queueable;
     use SerializesModels;
     use WithUniqueUrl;
+    use WithUrlMessageUpdate;
 
     public function __construct(public readonly Url $url)
     {
@@ -32,9 +32,9 @@ class WorkflowReadUrlJob extends AbstractWorkflowTransitionJob implements Should
         $this->url->workflow_apply(UrlTransition::TO_READ->value);
         $this->url->update(['read_at' => Carbon::now()]);
 
-        (new UpdateUrlMessageRequest(
+        $this->updateUrlMessage(
             $this->url,
             $urlMessageFormatter->formatHtmlMessage($this->url, __('watchtower.url.read'))
-        ))->send();
+        );
     }
 }
