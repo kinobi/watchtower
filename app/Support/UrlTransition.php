@@ -8,6 +8,7 @@ use App\Jobs\WorkflowReadingUrlJob;
 use App\Jobs\WorkflowReadUrlJob;
 use App\Jobs\WorkflowResetUrlToDraftJob;
 use App\Jobs\WorkflowSendUrlToKindleJob;
+use App\Jobs\WorkflowShareUrlJob;
 use App\Jobs\WorkflowTrashNoteJob;
 use App\Models\Url;
 
@@ -32,7 +33,7 @@ enum UrlTransition: string
             self::RESET => WorkflowResetUrlToDraftJob::dispatch($url),
             self::ANNOTATE => CreateAnnotationJob::dispatch($url),
             self::TRASH_NOTE => WorkflowTrashNoteJob::dispatch($url),
-            default => null,
+            self::SHARE => WorkflowShareUrlJob::dispatch($url),
         };
 
         return $this->getAnswerNotificationText();

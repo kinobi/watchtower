@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Url;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -27,5 +28,11 @@ Route::get('/', function () {
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::feeds('/feeds');
+
+Route::get('/urls/{url}', function (Url $url) {
+    return redirect()->away($url->link);
+})->name('url.uri');
 
 require __DIR__ . '/auth.php';

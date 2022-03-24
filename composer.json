@@ -31,6 +31,7 @@
         "laravel/sanctum": "^2.8",
         "laravel/tinker": "^2.5",
         "sammyjo20/saloon-laravel": "^0.8.0",
+        "spatie/laravel-feed": "^4.1",
         "tightenco/ziggy": "^1.0",
         "zerodahero/laravel-workflow": "^4.0"
     },

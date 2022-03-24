@@ -4,12 +4,11 @@ namespace App\Http\Integrations\TelegramBot;
 
 use App\Http\Integrations\TelegramBot\Requests\AnswerCallbackQueryRequest;
 use App\Http\Integrations\TelegramBot\Requests\CreateAnnotationMessageRequest;
+use App\Http\Integrations\TelegramBot\Requests\CreateUrlMessageRequest;
 use App\Http\Integrations\TelegramBot\Requests\DeleteMessageRequest;
 use App\Http\Integrations\TelegramBot\Requests\PinUrlMessageRequest;
-use App\Http\Integrations\TelegramBot\Requests\CreateUrlMessageRequest;
 use App\Http\Integrations\TelegramBot\Requests\SendMessageRequest;
 use App\Http\Integrations\TelegramBot\Requests\UnpinUrlMessageRequest;
-use App\Http\Integrations\TelegramBot\Requests\UpdateUrlMessageRequest;
 use Sammyjo20\Saloon\Http\SaloonConnector;
 use Sammyjo20\Saloon\Traits\Features\AcceptsJson;
 

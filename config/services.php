@@ -30,6 +30,10 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'bitly' => [
+        'token' => env('BITLY_TOKEN', ''),
+    ],
+
     'telegram' => [
         'bot' => [
             'id' => env('TELEGRAM_BOT_ID'),
