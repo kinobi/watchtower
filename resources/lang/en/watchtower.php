@@ -13,6 +13,9 @@ return [
         'failed' => '⛔ WatchTower failed to bookmark',
         'tags' => ['watchtower']
     ],
+    'bitly' => [
+        'tags' => ['watchtower']
+    ],
     'url' => [
         'created' => '📥 Watchtower received a new entry !',
         'duplicated' => '⚠ Watchtower already get this one !',
@@ -20,6 +23,7 @@ return [
         'read' => '📗 Done reading !',
         'reset' => '⏮️ Sent back in draft !',
         'annotated' => '📝 Annotated !',
+        'shared' => '📰 Shared !',
         'note_trashed' => [
             'success' => '🗑️ Note trashed !',
             'failed' => '⚠ Failed to trash the note !',
@@ -36,6 +40,7 @@ return [
             UrlTransition::RESET->value => ':icon resetting...',
             UrlTransition::ANNOTATE->value => ':icon creating note...',
             UrlTransition::TRASH_NOTE->value => ':icon deleting note...',
+            UrlTransition::SHARE->value => ':icon sharing...',
         ],
     ],
     'annotation' => [

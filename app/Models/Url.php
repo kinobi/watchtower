@@ -11,10 +11,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Spatie\Feed\Feedable;
+use Spatie\Feed\FeedItem;
 use Symfony\Component\Workflow\Transition;
 use ZeroDaHero\LaravelWorkflow\Traits\WorkflowTrait;
 
-class Url extends Model
+class Url extends Model implements Feedable
 {
     use HasFactory;
     use WorkflowTrait;
@@ -81,9 +83,19 @@ class Url extends Model
         );
     }
 
+    public function link(): Attribute
+    {
+        return Attribute::get(fn() => $this->shortUrl?->url ?? $this->uri);
+    }
+
     public function annotation(): HasOne
     {
         return $this->hasOne(Annotation::class);
+    }
+
+    public function shortUrl(): HasOne
+    {
+        return $this->hasOne(ShortUrl::class);
     }
 
     public function telegramUpdate(): BelongsTo
@@ -104,5 +116,27 @@ class Url extends Model
     public function scopeReading(Builder $query): Builder
     {
         return $query->where('status->reading', 1);
+    }
+
+    public function scopeShared(Builder $query): Builder
+    {
+        return $query->where('status->shared', 1);
+    }
+
+    public function getAllFeedItems()
+    {
+        return self::shared()->with(['annotation', 'shortUrl'])->get();
+    }
+
+    public function toFeedItem(): FeedItem
+    {
+        return FeedItem::create()
+            ->id(route('url.uri', ['url' => $this]))
+            ->title($this->title)
+            ->summary($this->annotation->note)
+            ->updated($this->updated_at)
+            ->link($this->link)
+            ->authorName('')
+            ->authorEmail('');
     }
 }
