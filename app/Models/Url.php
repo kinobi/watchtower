@@ -22,14 +22,12 @@ class Url extends Model implements Feedable
     use WorkflowTrait;
 
     protected $casts = [
-        'meta_html' => 'array',
         'read_at' => 'immutable_datetime',
         'status' => 'array',
     ];
 
     protected $fillable = [
         'chat_id',
-        'meta_html',
         'message_id',
         'read_at',
         'title',
