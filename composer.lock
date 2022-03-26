@@ -5361,19 +5361,20 @@
         },
         {
             "name": "tightenco/ziggy",
-            "version": "v1.4.4",
+            "version": "v1.4.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tighten/ziggy.git",
-                "reference": "ad1b6590978efe3ec36ca404e91f8acaa6c742bd"
+                "reference": "d3c74474f624ab80b7fb4e3e264e62bb4043eee2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tighten/ziggy/zipball/ad1b6590978efe3ec36ca404e91f8acaa6c742bd",
-                "reference": "ad1b6590978efe3ec36ca404e91f8acaa6c742bd",
+                "url": "https://api.github.com/repos/tighten/ziggy/zipball/d3c74474f624ab80b7fb4e3e264e62bb4043eee2",
+                "reference": "d3c74474f624ab80b7fb4e3e264e62bb4043eee2",
                 "shasum": ""
             },
             "require": {
+                "ext-json": "*",
                 "laravel/framework": ">=5.4@dev"
             },
             "require-dev": {
@@ -5421,9 +5422,9 @@
             ],
             "support": {
                 "issues": "https://github.com/tighten/ziggy/issues",
-                "source": "https://github.com/tighten/ziggy/tree/v1.4.4"
+                "source": "https://github.com/tighten/ziggy/tree/v1.4.5"
             },
-            "time": "2022-03-11T18:06:53+00:00"
+            "time": "2022-03-25T22:36:59+00:00"
         },
         {
             "name": "tijsverkoyen/css-to-inline-styles",
@@ -7246,12 +7247,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Roave/SecurityAdvisories.git",
-                "reference": "a1696aadf99f7ff55d44c56e7ebf54eace85310c"
+                "reference": "2fcd9551cd31a444bbc43d221d483fa658d4c21b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/a1696aadf99f7ff55d44c56e7ebf54eace85310c",
-                "reference": "a1696aadf99f7ff55d44c56e7ebf54eace85310c",
+                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/2fcd9551cd31a444bbc43d221d483fa658d4c21b",
+                "reference": "2fcd9551cd31a444bbc43d221d483fa658d4c21b",
                 "shasum": ""
             },
             "conflict": {
@@ -7484,7 +7485,7 @@
                 "phpoffice/phpspreadsheet": "<1.16",
                 "phpseclib/phpseclib": "<2.0.31|>=3,<3.0.7",
                 "phpservermon/phpservermon": "<=3.5.2",
-                "phpunit/phpunit": ">=4.8.19,<4.8.28|>=5.0.10,<5.6.3",
+                "phpunit/phpunit": "<4.8.28|>=5,<5.6.3",
                 "phpwhois/phpwhois": "<=4.2.5",
                 "phpxmlrpc/extras": "<0.6.1",
                 "pimcore/pimcore": "<=10.3.2",
@@ -7703,7 +7704,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-03-22T13:13:56+00:00"
+            "time": "2022-03-26T01:31:07+00:00"
         },
         {
             "name": "sebastian/cli-parser",

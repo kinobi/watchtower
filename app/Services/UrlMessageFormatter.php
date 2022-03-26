@@ -36,7 +36,7 @@ EOF;
             $url->created_at->ago(),
         );
 
-        if ($url->annotation) {
+        if ($url->annotation?->note) {
             $text .= sprintf(self::ANNOTATION_FORMAT_HTML, $url->annotation->note);
         }
 
