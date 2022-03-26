@@ -23,6 +23,7 @@
         "ext-tokenizer": "*",
         "ext-xml": "*",
         "ext-zip": "*",
+        "doctrine/dbal": "^3.3",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.0.1",
         "guzzlehttp/psr7": "^2.1",
