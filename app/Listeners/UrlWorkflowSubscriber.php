@@ -2,13 +2,11 @@
 
 namespace App\Listeners;
 
-use App\Jobs\PinUrlJob;
 use App\Jobs\UnpinUrlJob;
 use App\Models\Url;
 use App\Support\UrlStatus;
 use App\Support\UrlTransition;
 use Illuminate\Events\Dispatcher;
-use ZeroDaHero\LaravelWorkflow\Events\EnteredEvent;
 use ZeroDaHero\LaravelWorkflow\Events\GuardEvent;
 use ZeroDaHero\LaravelWorkflow\Events\LeaveEvent;
 
@@ -19,7 +17,7 @@ class UrlWorkflowSubscriber
         /** @var Url $url */
         $url = $event->getSubject();
 
-        $type = $url->meta_html['type'] ?? null;
+        $type = $url->metaData?->meta['type'] ?? null;
         if (in_array($type, ['video', 'image', 'audio'], true)) {
             $event->setBlocked(true, sprintf('Cannot send "%s" to Kindle', $type));
         }
