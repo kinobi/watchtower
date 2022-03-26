@@ -93,6 +93,11 @@ class Url extends Model implements Feedable
         return $this->hasOne(Annotation::class);
     }
 
+    public function metaData(): HasOne
+    {
+        return $this->hasOne(MetaData::class);
+    }
+
     public function shortUrl(): HasOne
     {
         return $this->hasOne(ShortUrl::class);

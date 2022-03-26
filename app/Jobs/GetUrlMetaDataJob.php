@@ -37,6 +37,10 @@ class GetUrlMetaDataJob implements ShouldQueue, ShouldBeUnique
         $metaHtml = collect($parsedUrl['item'])->only(['excerpt', 'type', 'meta']);
         $title = data_get($parsedUrl, 'item.title');
 
-        $this->url->update(['title' => $title, 'meta_html' => $metaHtml->toArray()]);
+        $this->url->update(['title' => $title]);
+        $this->url->metaData()->create([
+            'provider' => 'raindrop',
+            'meta' => $metaHtml->toArray(),
+        ]);
     }
 }
