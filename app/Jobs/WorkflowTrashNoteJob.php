@@ -3,7 +3,6 @@
 namespace App\Jobs;
 
 use App\Models\Url;
-use App\Services\UrlMessageFormatter;
 use App\Support\Jobs\WithUniqueUrl;
 use App\Support\UrlTransition;
 use Illuminate\Bus\Queueable;
@@ -12,6 +11,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\View;
 
 class WorkflowTrashNoteJob extends AbstractWorkflowTransitionJob implements ShouldQueue, ShouldBeUnique
 {
@@ -26,7 +26,7 @@ class WorkflowTrashNoteJob extends AbstractWorkflowTransitionJob implements Shou
     {
     }
 
-    protected function execute(UrlMessageFormatter $urlMessageFormatter): void
+    protected function execute(): void
     {
         $this->url->workflow_apply(UrlTransition::TRASH_NOTE->value);
 
@@ -39,7 +39,10 @@ class WorkflowTrashNoteJob extends AbstractWorkflowTransitionJob implements Shou
 
         $this->updateUrlMessage(
             $this->url->refresh(),
-            $urlMessageFormatter->formatHtmlMessage($this->url, $text)
+            View::make('telegram.url_message', [
+                'url' => $this->url,
+                'text' => $text,
+            ])->render()
         );
     }
 }

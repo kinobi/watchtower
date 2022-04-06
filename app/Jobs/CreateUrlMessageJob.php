@@ -4,12 +4,12 @@ namespace App\Jobs;
 
 use App\Http\Integrations\TelegramBot\Requests\CreateUrlMessageRequest;
 use App\Models\Url;
-use App\Services\UrlMessageFormatter;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\View;
 
 class CreateUrlMessageJob implements ShouldQueue
 {
@@ -30,7 +30,7 @@ class CreateUrlMessageJob implements ShouldQueue
     /**
      * Create the WatchTower keyboard for this Url
      */
-    public function handle(UrlMessageFormatter $urlMessageFormatter): void
+    public function handle(): void
     {
         $text = $this->wasRecentlyCreated ? __('watchtower.url.created') : __('watchtower.url.duplicated');
         $text .= PHP_EOL . __('watchtower.url.stats.queue', [
@@ -41,7 +41,10 @@ class CreateUrlMessageJob implements ShouldQueue
 
         $botResponseReply = (new CreateUrlMessageRequest(
             $this->url->refresh(),
-            $urlMessageFormatter->formatHtmlMessage($this->url, $text)
+            View::make('telegram.url_message', [
+                'url' => $this->url,
+                'text' => $text,
+            ])->render()
         ))->send();
 
         $this->url->update(['message_id' => $botResponseReply->json('result.message_id')]);

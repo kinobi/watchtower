@@ -3,7 +3,6 @@
 namespace App\Jobs;
 
 use App\Models\Url;
-use App\Services\UrlMessageFormatter;
 use App\Support\Jobs\WithUniqueUrl;
 use App\Support\UrlTransition;
 use Illuminate\Bus\Queueable;
@@ -13,6 +12,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\View;
 
 class WorkflowReadUrlJob extends AbstractWorkflowTransitionJob implements ShouldQueue, ShouldBeUnique
 {
@@ -27,14 +27,17 @@ class WorkflowReadUrlJob extends AbstractWorkflowTransitionJob implements Should
     {
     }
 
-    protected function execute(UrlMessageFormatter $urlMessageFormatter): void
+    protected function execute(): void
     {
         $this->url->workflow_apply(UrlTransition::TO_READ->value);
         $this->url->update(['read_at' => Carbon::now()]);
 
         $this->updateUrlMessage(
             $this->url,
-            $urlMessageFormatter->formatHtmlMessage($this->url, __('watchtower.url.read'))
+            View::make('telegram.url_message', [
+                'url' => $this->url,
+                'text' => __('watchtower.url.read'),
+            ])->render()
         );
     }
 }
