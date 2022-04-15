@@ -2,11 +2,13 @@
 
 namespace App\Providers;
 
+use App\Events\BotCommandReceived;
 use App\Events\CallbackQueryReceived;
 use App\Events\ReplyReceived;
 use App\Events\UrlsAdded;
 use App\Listeners\AnnotationWorkflowSubscriber;
 use App\Listeners\AnswerCallback;
+use App\Listeners\ExecuteBotCommand;
 use App\Listeners\StoreAnnotation;
 use App\Listeners\StoreNewUrls;
 use App\Listeners\UrlWorkflowSubscriber;
@@ -26,6 +28,9 @@ class EventServiceProvider extends ServiceProvider
      * @var array<class-string, array<int, class-string>>
      */
     protected $listen = [
+        BotCommandReceived::class => [
+            ExecuteBotCommand::class,
+        ],
         CallbackQueryReceived::class => [
             AnswerCallback::class,
         ],

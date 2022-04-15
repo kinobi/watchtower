@@ -46,6 +46,7 @@ class SendMessageRequest extends SaloonRequest
         return [
             'chat_id' => $this->chatId,
             'text' => $this->text,
+            'parse_mode' => 'HTML',
         ];
     }
 }

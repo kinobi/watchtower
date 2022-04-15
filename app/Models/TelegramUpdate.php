@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Integrations\TelegramBot\Dtos\BotCommand;
 use App\Http\Integrations\TelegramBot\Dtos\MessageReference;
 use GuzzleHttp\Psr7\Uri;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -19,6 +20,19 @@ class TelegramUpdate extends Model
     ];
 
     private ?ParameterBag $json;
+
+    /**
+     * Does the update has Bot Command
+     *
+     * @return bool
+     * @throws \JsonException
+     */
+    public function hasBotCommand(): bool
+    {
+        return collect($this->data('message.entities', []))->contains(
+            fn($value) => $value['type'] === 'bot_command'
+        );
+    }
 
     /**
      * Does the update has Urls
@@ -71,6 +85,28 @@ class TelegramUpdate extends Model
                 fn(array $urlEntity) => $urlEntity['type'] === 'url'
                     ? new Uri(mb_substr($text, $urlEntity['offset'], $urlEntity['length']))
                     : new Uri($urlEntity['url'])
+            );
+    }
+
+    /**
+     * Get the Bot commands
+     *
+     * @return Collection
+     * @throws \JsonException
+     */
+    public function getBotCommands(): Collection
+    {
+        $text = (string)$this->data('message.text', '');
+        $entities = collect($this->data('message.entities', []));
+
+        return $entities
+            ->where('type', 'bot_command')
+            ->map(
+                fn(array $botCommandEntity) => new BotCommand(
+                    $this->getTelegramMessageReference(),
+                    mb_substr($text, $botCommandEntity['offset'], $botCommandEntity['length']),
+                    mb_substr($text, $botCommandEntity['offset'] + $botCommandEntity['length'])
+                )
             );
     }
 

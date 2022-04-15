@@ -2,40 +2,41 @@
 
 namespace App\Jobs;
 
+use App\Http\Integrations\TelegramBot\Dtos\MessageReference;
 use App\Models\Url;
-use App\Support\Jobs\WithUniqueUrl;
-use App\Support\UrlTransition;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\View;
 
-class WorkflowResetUrlToDraftJob extends AbstractWorkflowTransitionJob implements ShouldQueue, ShouldBeUnique
+class GetUrlJob implements ShouldQueue
 {
     use Dispatchable;
     use InteractsWithQueue;
     use Queueable;
     use SerializesModels;
-    use WithUniqueUrl;
     use WithUrlMessageUpdate;
 
-    public function __construct(public readonly Url $url)
+    /**
+     * Create a new job instance.
+     *
+     * @return void
+     */
+    public function __construct(public readonly MessageReference $messageReference, public readonly string $payload)
     {
     }
 
-    protected function execute(): void
+    public function handle(): void
     {
-        $this->url->workflow_apply(UrlTransition::RESET->value);
-        $this->url->save();
+        $url = Url::find((int)$this->payload);
+        CleanChatJob::dispatch($this->messageReference);
 
         $this->updateUrlMessage(
-            $this->url,
+            $url->refresh(),
             View::make('telegram.url_message', [
-                'url' => $this->url,
-                'text' => __('watchtower.url.reset'),
+                'url' => $url,
             ])->render()
         );
     }

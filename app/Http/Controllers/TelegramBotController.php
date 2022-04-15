@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\BotCommandReceived;
 use App\Events\CallbackQueryReceived;
 use App\Events\ReplyReceived;
 use App\Events\UrlsAdded;
@@ -31,6 +32,10 @@ class TelegramBotController extends Controller
 
         if ($telegramUpdate->isCallbackQuery()) {
             CallbackQueryReceived::dispatch($telegramUpdate);
+        }
+
+        if ($telegramUpdate->hasBotCommand()) {
+            BotCommandReceived::dispatch($telegramUpdate);
         }
 
         return \response()->noContent(200);

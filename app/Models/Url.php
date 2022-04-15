@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Laravel\Scout\Searchable;
 use Spatie\Feed\Feedable;
 use Spatie\Feed\FeedItem;
 use Symfony\Component\Workflow\Transition;
@@ -19,6 +20,7 @@ use ZeroDaHero\LaravelWorkflow\Traits\WorkflowTrait;
 class Url extends Model implements Feedable
 {
     use HasFactory;
+    use Searchable;
     use WorkflowTrait;
 
     protected $casts = [
@@ -55,6 +57,29 @@ class Url extends Model implements Feedable
             });
 
         return $buttons->chunk($rowLength)->map(fn($row) => $row->values())->toArray();
+    }
+
+    public function toSearchableArray(): array
+    {
+        $searchData = $this->only([
+            'id',
+            'status',
+            'title',
+            'host',
+            'path',
+            'read_at',
+            'created_at',
+        ]);
+
+        $searchData['note'] = $this->annotation?->note;
+        $searchData['meta'] = $this->metaData?->meta;
+
+        return $searchData;
+    }
+
+    protected function makeAllSearchableUsing(Builder $query): Builder
+    {
+        return $query->with(['annotation', 'metaData']);
     }
 
     public function uri(): Attribute
