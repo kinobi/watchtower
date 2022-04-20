@@ -42,8 +42,6 @@ class CreateAnnotationMessageRequest extends SaloonRequest
 
     public function defaultData(): array
     {
-        $previousNote = mb_substr($this->url->annotation()->withTrashed()->latest()->first()->note, 0, 64);
-
         return [
             'chat_id' => $this->url->chat_id,
             'text' => __('watchtower.annotation.create', ['title' => $this->url->title]),
@@ -51,8 +49,15 @@ class CreateAnnotationMessageRequest extends SaloonRequest
             'protect_content' => true,
             'reply_markup' => [
                 'force_reply' => true,
-                'input_field_placeholder' => $previousNote,
+                'input_field_placeholder' => $this->getPreviousNote(),
             ],
         ];
+    }
+
+    protected function getPreviousNote(): string
+    {
+        $note = $this->url->annotation()->withTrashed()->latest()->first()?->note ?? '';
+
+        return mb_substr($note, 0, 64);
     }
 }
