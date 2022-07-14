@@ -42,7 +42,7 @@ class CreateMobiDocumentRequest extends SaloonRequest
     {
         return [
             'url' => $this->url,
-            'format' => 'mobi',
+            'format' => 'epub',
             'email' => $this->kindleEmail,
         ];
     }
